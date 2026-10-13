@@ -1,0 +1,27 @@
+================================================================================================================
+EXPERIMENT 11 — forward vs reverse transfer, identical protocol
+================================================================================================================
+
+S1 -> S2   (target n=3412, stratified-random macroF1=0.1997)
+  feature set                   d   src-val F1     TGT F1   TGT MCC   TGT acc      gap  vs chance
+  -----------------------------------------------------------------------------------------------
+  13-d g+t (transferable)      13  0.5341±0.073     0.4466    0.3973    0.5402     8.8p    +24.7pp
+  all 135-d (paper)           135  0.5133±0.082     0.2118    0.0976    0.3673    30.2p     +1.2pp
+  per-sensor ids only         106  0.3248±0.055     0.1350    0.0123    0.3215    19.0p     -6.5pp
+  no per-sensor (29-d)         29  0.5119±0.080     0.3630    0.2734    0.4437    14.9p    +16.3pp
+
+S2 -> S1   (target n=5031, stratified-random macroF1=0.2003)
+  feature set                   d   src-val F1     TGT F1   TGT MCC   TGT acc      gap  vs chance
+  -----------------------------------------------------------------------------------------------
+  13-d g+t (transferable)      13  0.4538±0.067     0.3068    0.2667    0.4234    14.7p    +10.7pp
+  all 135-d (paper)           135  0.5381±0.156     0.1583    0.0332    0.1936    38.0p     -4.2pp
+  per-sensor ids only         106  0.3668±0.108     0.1702    0.0553    0.2554    19.7p     -3.0pp
+  no per-sensor (29-d)         29  0.4483±0.067     0.2271    0.1043    0.2711    22.1p     +2.7pp
+
+================================================================================================================
+CLAIM CHECK
+  (a) gap, S1->S2: source 0.5341 -> target 0.4466  = 8.8 points
+  (a) gap, S2->S1: source 0.4538 -> target 0.3068  = 14.7 points
+  (b) per-sensor only, S1->S2: 0.1350 vs chance 0.1997  = -6.5 points  (below chance)
+  (b) per-sensor only, S2->S1: 0.1702 vs chance 0.2003  = -3.0 points  (below chance)
+-> results/exp11_reverse.csv

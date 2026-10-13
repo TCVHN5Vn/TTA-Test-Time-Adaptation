@@ -1,0 +1,41 @@
+======================================================================================================================
+EXPERIMENT 10 — source-side improvements on the deployable checkpoint
+  n_S1=5031 n_S2=3412  GroupKFold over 16 days, 3 seeds
+  chance: stratified macroF1=0.1997 | prior best (9-d causal) = 0.4133
+======================================================================================================================
+
+STAGE 1 — features x class weighting
+features                   d  cls-w       width  smooth |   TGT macroF1      MCC      acc     bal    vs 0.4133
+--------------------------------------------------------------------------------------------------------------
+g+t (9-d equivalent)      13  False  256-128-64       1 |   0.4350±0.061   0.3765   0.5205  0.4818        +2.2pp
+g+t (9-d equivalent)      13   True  256-128-64       1 |   0.3852±0.060   0.3098   0.4606  0.4280        -2.8pp
+g+s+t                     28  False  256-128-64       1 |   0.4245±0.039   0.3598   0.5089  0.4831        +1.1pp
+g+s+t                     28   True  256-128-64       1 |   0.3833±0.030   0.3173   0.4436  0.4570        -3.0pp
+g+s+r+t                   33  False  256-128-64       1 |   0.4227±0.027   0.3544   0.5014  0.4861        +0.9pp
+g+s+r+t                   33   True  256-128-64       1 |   0.3990±0.033   0.3142   0.4409  0.4802        -1.4pp
+all invariant (60-d)      60  False  256-128-64       1 |   0.4188±0.028   0.3472   0.4894  0.4836        +0.5pp
+all invariant (60-d)      60   True  256-128-64       1 |   0.3942±0.029   0.3112   0.4363  0.4740        -1.9pp
+
+STAGE 2 — width x causal smoothing, on 'g+t (9-d equivalent)' (class_weight=False)
+features                   d  cls-w       width  smooth |   TGT macroF1      MCC      acc     bal    vs 0.4133
+--------------------------------------------------------------------------------------------------------------
+g+t (9-d equivalent)      13  False  256-128-64       1 |   0.4350±0.061   0.3765   0.5205  0.4818        +2.2pp
+g+t (9-d equivalent)      13  False  256-128-64       5 |   0.4397±0.063   0.3831   0.5278  0.4853        +2.6pp
+g+t (9-d equivalent)      13  False  256-128-64      11 |   0.4426±0.066   0.3872   0.5320  0.4868        +2.9pp
+g+t (9-d equivalent)      13  False  256-128-64      21 |   0.4430±0.068   0.3909   0.5359  0.4869        +3.0pp
+g+t (9-d equivalent)      13  False  256-128-64      41 |   0.4466±0.067   0.3973   0.5402  0.4909        +3.3pp
+g+t (9-d equivalent)      13  False       64-32       1 |   0.4297±0.055   0.3781   0.5240  0.4891        +1.6pp
+g+t (9-d equivalent)      13  False       64-32       5 |   0.4336±0.058   0.3836   0.5308  0.4904        +2.0pp
+g+t (9-d equivalent)      13  False       64-32      11 |   0.4365±0.062   0.3860   0.5343  0.4904        +2.3pp
+g+t (9-d equivalent)      13  False       64-32      21 |   0.4397±0.066   0.3911   0.5394  0.4926        +2.6pp
+g+t (9-d equivalent)      13  False       64-32      41 |   0.4432±0.071   0.3958   0.5436  0.4945        +3.0pp
+g+t (9-d equivalent)      13  False      128-64       1 |   0.4107±0.058   0.3526   0.5107  0.4524        -0.3pp
+g+t (9-d equivalent)      13  False      128-64       5 |   0.4132±0.060   0.3584   0.5179  0.4528        -0.0pp
+g+t (9-d equivalent)      13  False      128-64      11 |   0.4149±0.063   0.3627   0.5226  0.4535        +0.2pp
+g+t (9-d equivalent)      13  False      128-64      21 |   0.4143±0.066   0.3635   0.5243  0.4512        +0.1pp
+g+t (9-d equivalent)      13  False      128-64      41 |   0.4190±0.069   0.3735   0.5320  0.4554        +0.6pp
+
+BEST: g+t (9-d equivalent) d=13 class_weight=False width=256-128-64 smooth=41
+      macroF1=0.4466  MCC=0.3973  acc=0.5402  bal=0.4909
+      per-class F1: toileting=0.537  meal_prep=0.517  watching_tv=0.671  music=0.444  cleaning=0.064
+-> results/exp10_improve.csv

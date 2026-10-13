@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# compiled LaTeX
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.pdf
+paper/*.bbl
+paper/*.blg
+
+# intermediate prediction dumps (regenerate with src/exp6_tta_table.py)
+results/pred_*.npy
+results/occ_*.npy

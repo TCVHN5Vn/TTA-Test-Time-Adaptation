@@ -1,0 +1,81 @@
+========================================================================================================
+                                         SUMMARY OF ALL RESULTS                                         
+========================================================================================================
+
+1. THE SOURCE FIT  (all-135 features, 5 seeds)  -- which defect inflated 0.991?
+   windowing                   random 80/20   blocked  grouped-by-day
+   causal + label                    0.9975    0.4414          0.5261
+   causal + recording                0.9968    0.4608          0.5110
+   centered + label  <-PAPER         0.9984    0.4357          0.5287
+   centered + recording              0.9979    0.4571          0.5258
+   -> the random split alone causes it. Honest source macro-F1 = 0.51-0.53
+
+2. TARGET TRANSFER BY WINDOW  (blocked-trained)
+   windowing                   TGT macroF1   TGT MCC   TGT acc
+   centered + label  <-PAPER        0.1626    0.0945    0.3753
+   centered + recording             0.1953    0.1327    0.3924
+   causal + label                   0.2344    0.2036    0.4533
+   causal + recording               0.2356    0.1805    0.4440
+   -> causal windows IMPROVE transfer by 7.3 points and are deployable
+
+3. FEATURE DESIGN  (causal, GroupKFold, both directions)   chance macroF1 ~0.20
+   direction feature set                   d  src-val   TGT F1  TGT MCC  vs chance
+   S1->S2    13-d g+t (transferable)      13   0.5341   0.4466   0.3973    +24.7pp
+   S1->S2    all 135-d (paper)           135   0.5133   0.2118   0.0976     +1.2pp
+   S1->S2    per-sensor ids only         106   0.3248   0.1350   0.0123     -6.5pp
+   S1->S2    no per-sensor (29-d)         29   0.5119   0.3630   0.2734    +16.3pp
+   S2->S1    13-d g+t (transferable)      13   0.4538   0.3068   0.2667    +10.7pp
+   S2->S1    all 135-d (paper)           135   0.5381   0.1583   0.0332     -4.2pp
+   S2->S1    per-sensor ids only         106   0.3668   0.1702   0.0553     -3.0pp
+   S2->S1    no per-sensor (29-d)         29   0.4483   0.2271   0.1043     +2.7pp
+   -> per-sensor features BELOW chance both directions; paper's 135-d at/below chance both directions
+
+4. HAR TTA COMPARISON  (9-d causal checkpoint, 3 seeds)
+   method        stream               acc   macroF1      MCC   verdict
+   AdaBN         non-recurring     0.3782    0.2977   0.1517   HARMFUL (-17 F1)
+   DIGA          non-recurring     0.6045    0.4639   0.4739   only reliable gain (+1.7 F1)
+   DIGA          recurring         0.6073    0.4625   0.4700   only reliable gain (+1.7 F1)
+   PETAL-fixed   non-recurring     0.6033    0.4450   0.4522   null
+   PETAL-fixed   recurring         0.6038    0.4431   0.4504   null
+   PeTTA         recurring         0.6045    0.4470   0.4517   NO-OP (0/3412 changed)
+   Source-only   non-recurring     0.6042    0.4467   0.4515   baseline
+   Source-only   recurring         0.6042    0.4467   0.4515   baseline
+   TENT          non-recurring     0.3784    0.2976   0.1515   HARMFUL (-17 F1)
+
+5. PeTTA SILENT FREEZE  (divergence signal saturates)
+   variant                       median gamma  median alpha_t   changed   macroF1
+   as-published (sum)                1.000000        4.47e-09      0/3412    0.4493
+   per-dim mean                      0.826309        8.68e-03     10/3412    0.4448
+   sum + alpha floor 1e-3            1.000000        1.00e-03      1/3412    0.4494
+   per-dim + alpha floor 1e-3        0.825988        8.70e-03     10/3412    0.4448
+
+6. SOURCE-SIDE IMPROVEMENTS  (what helped, what did not)
+   baseline 9-d causal                      macroF1=0.4133
+   + 4 extra global stats (13-d)            macroF1=0.4350   WORKED (+2.2pp)
+   + causal smoothing L=41                  macroF1=0.4466   WORKED (+1.2pp)
+   richer invariant features: g+s+t          macroF1=0.4245   FAILED
+   richer invariant features: g+s+r+t        macroF1=0.4227   FAILED
+   richer invariant features: all invariant (60-d) macroF1=0.4188   FAILED
+   class weighting                          macroF1=0.3852   FAILED
+   -> BEST: 0.4466 +/- 0.067  (note: fold SD exceeds the gain)
+
+7. OCCUPANCY  (paper's protocol, 5 seeds)
+   method              acc   macroF1      MCC   paper MCC
+   Source-only      0.8867    0.8438   0.6892       0.587
+   AdaBN            0.8720    0.8225   0.6461           -
+   TENT             0.8720    0.8225   0.6461           -
+   DIGA             0.8813    0.8389   0.6810       0.725
+   PETAL-fixed      0.8867    0.8438   0.6892       0.587
+   PeTTA            0.8867    0.8438   0.6892       0.632
+   -> our source-only MCC 0.689 is 10 pts above the paper's source-only 0.587;
+      DIGA then adds nothing (-0.8). The paper's +13.8 gain was measured against a weak source model.
+   -> DIGA grid (64 configs): 83% HURT, best gain +0.9pp (not 13.8)
+
+8. HEADLINE  (same protocol both sides)
+                                   source    target       gap
+   paper as submitted               0.991     0.162     82.9p
+   corrected, S1->S2               0.5341    0.4466      8.8p
+   corrected, S2->S1               0.4538    0.3068     14.7p
+   -> the cross-building gap is 9-15 points, not 83
+
+========================================================================================================

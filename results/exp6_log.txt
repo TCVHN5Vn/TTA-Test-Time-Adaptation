@@ -1,0 +1,70 @@
+========================================================================================================
+EXPERIMENT 6 — target-stream TTA comparison   [causal_recording, global+temporal (9-d), zscore]
+  n_S1=5031  n_S2=3412   source selection: GroupKFold over 16 days
+  TARGET BASELINES  majority: acc=0.3784 macroF1=0.1098   stratified-random: acc=0.3059 macroF1=0.1997
+========================================================================================================
+  seed0 Source-only non-recurring  done
+  seed0 AdaBN       non-recurring  done
+  seed0 TENT        non-recurring  done
+  seed0 DIGA        non-recurring  done
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+/Users/mariemkbaier/projects/tta-smart-buildings/src/petal_fixed.py:148: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /Users/runner/work/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:821.)
+  return dict(preds=preds, probs=probs, drift=self._moved, loss=float(loss))
+  seed0 PETAL-fixed non-recurring  done
+  seed0 PeTTA       recurring      done
+  seed0 DIGA        recurring      done
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+  seed0 PETAL-fixed recurring      done
+  seed0 Source-only recurring      done
+  seed1 Source-only non-recurring  done
+  seed1 AdaBN       non-recurring  done
+  seed1 TENT        non-recurring  done
+  seed1 DIGA        non-recurring  done
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+  seed1 PETAL-fixed non-recurring  done
+  seed1 PeTTA       recurring      done
+  seed1 DIGA        recurring      done
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+  seed1 PETAL-fixed recurring      done
+  seed1 Source-only recurring      done
+  seed2 Source-only non-recurring  done
+  seed2 AdaBN       non-recurring  done
+  seed2 TENT        non-recurring  done
+  seed2 DIGA        non-recurring  done
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+  seed2 PETAL-fixed non-recurring  done
+  seed2 PeTTA       recurring      done
+  seed2 DIGA        recurring      done
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+[PETAL-fixed] posterior degeneracy=0.000 (unchecked)
+  seed2 PETAL-fixed recurring      done
+  seed2 Source-only recurring      done
+
+========================================================================================================
+method        stream                      acc         macro-F1              MCC
+AdaBN         non-recurring     0.3782+/-0.011    0.2977+/-0.005    0.1517+/-0.013
+DIGA          non-recurring     0.6045+/-0.013    0.4639+/-0.001    0.4739+/-0.009
+DIGA          recurring         0.6073+/-0.010    0.4625+/-0.013    0.4700+/-0.022
+PETAL-fixed   non-recurring     0.6033+/-0.008    0.4450+/-0.023    0.4522+/-0.026
+PETAL-fixed   recurring         0.6038+/-0.010    0.4431+/-0.020    0.4504+/-0.026
+PeTTA         recurring         0.6045+/-0.011    0.4470+/-0.025    0.4517+/-0.029
+Source-only   non-recurring     0.6042+/-0.013    0.4467+/-0.029    0.4515+/-0.033
+Source-only   recurring         0.6042+/-0.011    0.4467+/-0.025    0.4515+/-0.029
+TENT          non-recurring     0.3784+/-0.011    0.2976+/-0.005    0.1515+/-0.013
+
+95% paired-bootstrap CI on the DIFFERENCE from source-only (same stream, seed 0):
+  non-recurring AdaBN         dMacroF1 [-0.1754,-0.1379]   dMCC [-0.3046,-0.2500]  *
+  non-recurring TENT          dMacroF1 [-0.1756,-0.1383]   dMCC [-0.3050,-0.2503]  *
+  non-recurring DIGA          dMacroF1 [+0.0032,+0.0225]   dMCC [+0.0277,+0.0559]  *
+  non-recurring PETAL-fixed   dMacroF1 [-0.0076,+0.0027]   dMCC [-0.0013,+0.0130]
+  recurring     DIGA          dMacroF1 [+0.0146,+0.0311]   dMCC [+0.0387,+0.0633]  *
+  recurring     PETAL-fixed   dMacroF1 [-0.0087,+0.0015]   dMCC [-0.0067,+0.0067]
+  recurring     PeTTA         dMacroF1 [-0.0007,+0.0006]   dMCC [-0.0009,+0.0011]
+
+-> results/exp6_tta_global+temporal.csv

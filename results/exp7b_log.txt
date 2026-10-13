@@ -1,0 +1,28 @@
+================================================================================================
+EXPERIMENT 7 — PeTTA divergence saturation
+================================================================================================
+source-only: acc=0.6067 macroF1=0.4493 MCC=0.4745
+
+as-published (sum)           gamma_bar med=1.000000 (min 0.1505)  alpha_t med=4.47e-09  mahal_d med=5.87e+02
+                             changed=   0/3412   acc=0.6067 macroF1=0.4493 MCC=0.4745
+
+per-dim mean                 gamma_bar med=0.826309 (min 0.0027)  alpha_t med=8.68e-03  mahal_d med=9.16e+00
+                             changed=  10/3412   acc=0.6040 macroF1=0.4448 MCC=0.4704
+
+sum + alpha floor 1e-3       gamma_bar med=1.000000 (min 0.1505)  alpha_t med=1.00e-03  mahal_d med=5.86e+02
+                             changed=   1/3412   acc=0.6067 macroF1=0.4494 MCC=0.4745
+
+per-dim + alpha floor 1e-3   gamma_bar med=0.825988 (min 0.0027)  alpha_t med=8.70e-03  mahal_d med=9.16e+00
+                             changed=  10/3412   acc=0.6040 macroF1=0.4448 MCC=0.4704
+
+-> results/exp7_petta_noop.csv
+
+================================================================================================
+FOLLOW-UP — PeTTA teacher-readout vs student-readout vs AdaBN   [9-d, zscore]
+================================================================================================
+variant                              changed       acc   macroF1       MCC
+source-only                                0    0.5982    0.4502    0.4435
+PeTTA (teacher readout)                    2    0.5976    0.4496    0.4426
+PeTTA (student readout)                  165    0.5888    0.4351    0.4383
+AdaBN                                   1690    0.3904    0.2966    0.1600
+-> results/exp7b_followup.csv
