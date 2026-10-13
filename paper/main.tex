@@ -82,16 +82,16 @@ the target in both directions, because a given sensor index is a different physi
 in each building. We also observe an inversion worth stating directly: the feature set
 with the best in-domain validation score transfers worst, in both directions.
 
-Against that corrected baseline the three methods behave differently, and each failure
+Against that baseline the three methods behave differently, and each failure
 traces to a specific published equation rather than to our port. PETAL's coefficient
 weights the likelihood, so the value selected by tuning on target labels removes the
 learning signal entirely. PeTTA gates its update rate on a Mahalanobis distance summed
 over $64$ embedding dimensions; across buildings that sum is large enough that the gate
 saturates and the teacher stops updating. DIGA does help, by $1.7$ \macf{} points with a
 bootstrap interval excluding zero, but only with hyperparameters retuned on target labels.
-On occupancy estimation no method improves on the source model, and the gains reported in
-earlier work arise from a target-fitted normalisation worth $3.8$ MCC points to every
-method including the unadapted baseline. Our conclusion is not that TTA fails in smart
+On occupancy estimation no method improves on the source model: what looks like an
+adaptation gain is a target-fitted normalisation worth $3.8$ MCC points to every method,
+the unadapted baseline included. Our conclusion is not that TTA fails in smart
 buildings, but that it was being asked to repair a problem largely created by evaluation
 and feature design.
 \end{abstract}
@@ -514,8 +514,8 @@ We report accuracy, \macf, MCC \cite{chicco2020} and per-class F\textsubscript{1
 metric for HAR because it weights all activities equally, which matters when the target
 minority classes are small.
 
-Chance baselines are reported in every table and are not optional here: several figures in
-the literature, and in our own earlier work, sit at or below them. On S2, constant-majority
+Chance baselines are reported in every table and are not optional here: several published
+figures for this transfer setting sit at or below them. On S2, constant-majority
 prediction gives accuracy $0.378$ and \macf{} $0.110$, and stratified-random prediction
 gives accuracy $0.306$ and \macf{} $\mathbf{0.200}$. On S1 the stratified-random \macf{} is
 $0.200$. For binary occupancy, always predicting ``not occupied'' gives accuracy $0.773$,
@@ -685,7 +685,7 @@ against $5031$, with the hard classes much thinner ($113$ versus $442$ for
 sides of the comparison. We therefore state the result as a gap of $9$ to $15$ points
 rather than quoting the more favourable direction.
 
-\subsection{Test-time adaptation on a corrected baseline}
+\subsection{Test-time adaptation on the deployable checkpoint}
 \label{sec:res-tta}
 
 Table~\ref{tab:tta} compares the methods on the deployable checkpoint.
@@ -905,8 +905,9 @@ PeTTA       & $0.6583$ & $0.6951$ & $0.6966$ \\
 Three results follow. No method improves on the source model under any protocol; DIGA is
 below the baseline in all three columns. The choice of normalisation is worth $+3.8$ MCC
 points, but it is worth that to \emph{every} method equally, including the unadapted
-baseline --- it is normalisation, not adaptation, and attributing it to a TTA method is an
-error we have made previously and correct here. Finally, PETAL and PeTTA reproduce
+baseline. It is normalisation, not adaptation, and a protocol that fits the scaler on
+target statistics will credit it to whichever method happens to be under test. Finally,
+PETAL and PeTTA reproduce
 source-only predictions to four decimal places on this task as well, which rules out a
 HAR-specific explanation for the two freezes reported in Section~\ref{sec:res-mech}.
 
@@ -950,8 +951,7 @@ parameter set it advertises does not, and the gap between its published and retu
 settings is larger than the gain adaptation produces.
 
 A practical consequence runs through all three. Hyperparameter selection on held-out target
-labels, standard in this literature and used in our own earlier work, is not merely
-optimistic. It can select degenerate configurations, as the PETAL sweep shows, and it can
+labels, which is standard in this literature, is not merely optimistic. It can select degenerate configurations, as the PETAL sweep shows, and it can
 make a method appear to transfer when what transferred was the tuning. A label-free
 criterion should be reported alongside any oracle-tuned number.
 
@@ -977,20 +977,20 @@ removes the effect, and the window definition is nearly irrelevant to it. Making
 causal, which the online premise of TTA requires, improves target transfer by $7.3$ points
 rather than costing anything.
 
-With the protocol corrected, the cross-building gap is $9$ to $15$ points depending on
+Under the grouped protocol the cross-building gap is $9$ to $15$ points depending on
 direction, and most of it is attributable to features that encode sensor identity. Those
 features score below stratified-random guessing on the target in both directions. The
 feature set that validates best in-domain transfers worst, also in both directions.
 
-Of the three methods, only DIGA improves on the corrected baseline, by $1.7$ \macf{} points
+Of the three methods, only DIGA improves on this baseline, by $1.7$ \macf{} points
 with a bootstrap interval excluding zero, and only with hyperparameters retuned on target
 labels. PETAL and PeTTA do not adapt at all, for reasons traceable to specific equations:
 PETAL's coefficient scales the likelihood, so the value selected by target-label tuning
 removes the learning signal; PeTTA's divergence signal sums over the embedding dimension
 and saturates when the domains are buildings. Both failures reproduce on occupancy
-estimation, where no method improves on the source model and the gains reported in earlier
-work are attributable to a target-fitted normalisation worth $3.8$ MCC points to every
-method including the unadapted one.
+estimation, where no method improves on the source model and an apparent adaptation gain
+proves attributable to a target-fitted normalisation worth $3.8$ MCC points to every
+method, the unadapted one included.
 
 We do not conclude that test-time adaptation is unsuitable for smart buildings. We conclude
 that it was being asked to repair a problem largely created by evaluation and feature
@@ -1006,8 +1006,7 @@ best in-domain configuration are exactly the information currently being thrown 
 Code, the raw WSU sensor data and every result file are available at
 \url{https://github.com/TCVHN5Vn/TTA-Test-Time-Adaptation}. The repository reproduces the
 full analysis from the raw CSVs in one pass, each table above names the script and result
-file that generated it, and the feature pipeline reproduces the engineered features used
-in earlier work on this data to float32 precision. The occupancy dataset is private --- it
+file that generated it. The occupancy dataset is private --- it
 was collected at the Grenoble Institute of Technology and is not ours to redistribute ---
 so that section alone is reported but not independently reproducible. Implementations of
 the three adaptation methods as originally applied are at

@@ -1,23 +1,25 @@
-# Test-Time Adaptation for Cross-Building HAR — corrected analysis
+# TTA: Test Time Adaptation
 
-Reproduction, correction and re-analysis of our earlier TTA study on WSU smart-home
-data. The feature pipeline here reproduces the previously published engineered features
-to float32 precision, and the previously published target macro-F1 of 0.162, so the
-corrections below are measurements of the original pipeline rather than of a rewrite.
+Test-time adaptation for cross-building human activity recognition and occupancy
+estimation on WSU smart-home sensor data. Evaluates DIGA, PETAL and PeTTA under a
+deployable online protocol, in both transfer directions, with chance baselines and
+paired bootstrap intervals throughout.
 
 ## Headline
 
-| | previously reported | corrected |
-|---|---|---|
-| source-domain fit | 0.991 | 0.51–0.53 |
-| cross-building gap | 82.9 pts | 9–15 pts |
-| best target macro-F1 | 0.265 | 0.447 |
-| best TTA gain | "+9.9 (pruning)" | +1.7 (DIGA only) |
-| PETAL / PeTTA | "negative finding" | neither method runs |
-| occupancy DIGA | +13.8 MCC | −0.8 |
+| | |
+|---|---|
+| source-domain fit, grouped by day | 0.51–0.53 |
+| cross-building gap, both directions | 9–15 pts |
+| best target macro-F1 | 0.447 |
+| only method with a significant gain | DIGA, +1.7 |
+| PETAL / PeTTA | neither adapts; see `src/exp7`, `src/exp12` |
+| occupancy | no method beats source-only |
 
-Full detail and provenance: [CORRECTIONS.md](CORRECTIONS.md).
-Manuscript front matter and framing: [PAPER_DRAFT.md](PAPER_DRAFT.md).
+Stride-1 windowing under a random validation split inflates source macro-F1 to 0.998
+regardless of how the window is defined; grouping the split by recording day removes the
+effect. Per-sensor features score below stratified-random on the target in both transfer
+directions. The feature set that validates best in-domain transfers worst.
 
 ## Layout
 
