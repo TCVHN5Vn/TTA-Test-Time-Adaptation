@@ -30,8 +30,10 @@ paper/      cas-dc manuscript, TikZ diagrams, generated figures
 
 ## Reproducing
 
+Everything runs from the raw CSVs bundled in `data/raw/`. No external downloads.
+
 ```bash
-python -m venv .venv && .venv/bin/pip install numpy pandas scipy scikit-learn torch matplotlib
+python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python src/build_features.py        # 4 windowing variants from raw CSVs
 .venv/bin/python src/build_features_v2.py     # extended layout-invariant features
 .venv/bin/python src/exp4_windowing.py        # leakage decomposition
@@ -46,8 +48,12 @@ python -m venv .venv && .venv/bin/pip install numpy pandas scipy scikit-learn to
 .venv/bin/python src/make_figures.py          # manuscript figures
 ```
 
-`build_features.py` reads the raw WSU CSVs from `~/Desktop/dataset`; adjust `RAW` at the
-top if they live elsewhere. The occupancy data is private and is not included.
+`build_features.py` reads `data/raw/` by default; set `TTA_RAW` to point elsewhere. The
+occupancy data is private (two offices at the Grenoble Institute of Technology, via
+Dridi, Amayri & Bouguila) and is not included, so `exp8`/`exp13` will not run without it.
+
+Implementations of the three adaptation methods as originally applied live in a separate
+repository: <https://github.com/TCVHN5Vn/Test-Time-Adaptation>.
 
 ## Building the manuscript
 

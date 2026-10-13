@@ -27,14 +27,19 @@ import os, sys, argparse, pickle
 import numpy as np, pandas as pd
 from scipy.stats import entropy as scipy_entropy
 
-RAW = "/Users/mariemkbaier/Desktop/dataset"
+# Raw CSVs ship with the repository; override with TTA_RAW to point elsewhere.
+RAW = os.environ.get("TTA_RAW",
+                     os.path.join(os.path.dirname(__file__), "..", "data", "raw"))
 OUT = os.path.join(os.path.dirname(__file__), "..", "data")
 LABEL_MAP = {15.0: 0, 60.0: 1, 65.0: 2, 70.0: 3, 85.0: 4}
 W = 20
 
 
 def load_raw(name):
-    d = pd.read_csv(f"{RAW}/Copie de Final_Data_{name}_AR (1).csv")
+    p = os.path.join(RAW, f"{name}_raw.csv")
+    if not os.path.exists(p):                       # legacy filenames
+        p = os.path.join(RAW, f"Copie de Final_Data_{name}_AR (1).csv")
+    d = pd.read_csv(p)
     return d.sort_values(["year_day", "time"]).reset_index(drop=True)
 
 

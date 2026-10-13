@@ -1003,11 +1003,15 @@ best in-domain configuration are exactly the information currently being thrown 
 % ============================================================================
 \section*{Reproducibility}
 
-Code and the HAR data pipeline are available at
-\url{https://github.com/TCVHN5Vn/Test-Time-Adaptation}. The feature pipeline reproduces
-the published engineered features to float32 precision, and each table above names the
-script and result file that generated it. The occupancy dataset is private and cannot be
-redistributed; that section is reported but not independently reproducible.
+Code, the raw WSU sensor data and every result file are available at
+\url{https://github.com/TCVHN5Vn/TTA-Test-Time-Adaptation}. The repository reproduces the
+full analysis from the raw CSVs in one pass, each table above names the script and result
+file that generated it, and the feature pipeline reproduces the engineered features used
+in earlier work on this data to float32 precision. The occupancy dataset is private --- it
+was collected at the Grenoble Institute of Technology and is not ours to redistribute ---
+so that section alone is reported but not independently reproducible. Implementations of
+the three adaptation methods as originally applied are at
+\url{https://github.com/TCVHN5Vn/Test-Time-Adaptation}.
 
 \section*{Acknowledgements}
 
