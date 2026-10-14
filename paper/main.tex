@@ -1042,14 +1042,57 @@ PeTTA       & $0.6583$ & $0.6951$ & $0.6966$ \\
 \end{tabular}
 \end{table*}
 
-Three results follow. No method improves on the source model under any protocol; DIGA is
-below the baseline in all three columns. The choice of normalisation is worth $+3.8$ MCC
+Three results follow from Table~\ref{tab:oe}. No method improves on the source model
+under any protocol; DIGA is below the baseline in all three columns. The choice of normalisation is worth $+3.8$ MCC
 points, but it is worth that to \emph{every} method equally, including the unadapted
 baseline. It is normalisation, not adaptation, and a protocol that fits the scaler on
 target statistics will credit it to whichever method happens to be under test. Finally,
 PETAL and PeTTA reproduce
 source-only predictions to four decimal places on this task as well, which rules out a
 HAR-specific explanation for the two freezes reported in Section~\ref{sec:res-mech}.
+
+Running the transfer in the reverse direction --- training on the target office and
+evaluating on the source office --- changes the picture completely, and in a way that is
+the most direct evidence in this paper for its central claim.
+
+% source: results/exp17_occ_reverse.csv (src/exp17_occ_reverse.py), 5 seeds
+\begin{table*}[t]
+\centering
+\caption{Occupancy in both transfer directions, MCC, source-fitted normalisation, 5 seeds.
+The only thing that differs between the two columns is which office supplies the source
+model. Always predicting ``not occupied'' gives MCC $0.000$ in both.}
+\label{tab:oe-rev}
+\small
+\begin{tabular}{lcc}
+\toprule
+Method & source $\to$ target & target $\to$ source \\
+\midrule
+Source-only & $\mathbf{0.6583}$ & $-0.0775$ \\
+AdaBN       & $0.6412$ & $\mathbf{0.3374}$ \\
+DIGA        & $0.6401$ & $0.1934$ \\
+PETAL       & $0.6583$ & $-0.0775$ \\
+PeTTA       & $0.6583$ & $-0.0775$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+In the reverse direction the source checkpoint is not merely weak but worse than chance:
+trained on the target office, it reaches MCC $-0.0775$ on the source office, meaning its
+predictions are anti-correlated with the labels. Against that starting point AdaBN
+improves MCC by $41.5$ points and DIGA by $27.1$. In the forward direction, starting from
+a checkpoint at $0.6583$, the same two methods lose $1.7$ and $1.8$ points respectively.
+
+The contrast is as clean as this dataset allows: identical methods, identical protocol,
+identical features, two offices, and the only variable is whether the source model was any
+good. When it is, adaptation has nothing to contribute and the normalisation-based methods
+actively harm it; when it is broken, the same methods recover a large part of the deficit.
+This mirrors AdaBN's behaviour on HAR, where it costs $17$ \macf{} points against a sound
+checkpoint, and it supports reading adaptation gain as a measure of source-model
+deficiency rather than of adaptation quality. A method evaluated only against a weak
+source model will appear to work.
+
+PETAL and PeTTA reproduce the source predictions exactly in this direction too. Across two
+tasks and two directions each, neither method has changed a prediction.
 
 % ============================================================================
 \section{Discussion}
@@ -1112,6 +1155,12 @@ A practical consequence runs through all three. Hyperparameter selection on held
 labels, which is standard in this literature, is not merely optimistic. It can select degenerate configurations, as the PETAL sweep shows, and it can
 make a method appear to transfer when what transferred was the tuning. A label-free
 criterion should be reported alongside any oracle-tuned number.
+
+The occupancy results in both directions (Table~\ref{tab:oe-rev}) are the cleanest
+demonstration of this available here, because they hold everything constant but the
+quality of the source model. Starting from a checkpoint at MCC $0.658$, adaptation costs
+roughly two points; starting from one at $-0.078$, the same methods gain twenty-seven to
+forty-one. The methods did not change. What changed is how much room there was.
 
 \paragraph{What generalises, and what does not.} The findings above differ in how far
 they travel, and it is worth separating them.

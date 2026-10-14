@@ -1,0 +1,45 @@
+====================================================================================================
+EXPERIMENT 17 — occupancy, both transfer directions
+====================================================================================================
+
+source office -> target office   (eval n=150, minority 34; always-'not occupied' MCC 0.000, acc 0.773)
+  A fit on source-of-this-direction       acc   macroF1       MCC
+    Source-only                        0.8720    0.8272    0.6583
+    AdaBN                              0.8653    0.8184    0.6412
+    DIGA                               0.8667    0.8186    0.6401
+    PETAL                              0.8720    0.8272    0.6583
+    PeTTA                              0.8720    0.8272    0.6583
+  B fit on adaptation split               acc   macroF1       MCC
+    Source-only                        0.8893    0.8469    0.6951
+    AdaBN                              0.8653    0.8114    0.6232
+    DIGA                               0.8853    0.8343    0.6693
+    PETAL                              0.8893    0.8469    0.6951
+    PeTTA                              0.8893    0.8469    0.6951
+  C fit on adaptation + eval              acc   macroF1       MCC
+    Source-only                        0.8893    0.8475    0.6966
+    AdaBN                              0.8680    0.8157    0.6323
+    DIGA                               0.8880    0.8382    0.6769
+    PETAL                              0.8893    0.8475    0.6966
+    PeTTA                              0.8893    0.8475    0.6966
+
+target office -> source office   (eval n=200, minority 52; always-'not occupied' MCC 0.000, acc 0.740)
+  A fit on source-of-this-direction       acc   macroF1       MCC
+    Source-only                        0.4680    0.4336   -0.0775
+    AdaBN                              0.7730    0.6500    0.3374
+    DIGA                               0.7120    0.5917    0.1934
+    PETAL                              0.4680    0.4336   -0.0775
+    PeTTA                              0.4680    0.4336   -0.0775
+  B fit on adaptation split               acc   macroF1       MCC
+    Source-only                        0.6420    0.5419    0.0871
+    AdaBN                              0.7300    0.6138    0.2383
+    DIGA                               0.7300    0.5809    0.1946
+    PETAL                              0.6420    0.5419    0.0871
+    PeTTA                              0.6420    0.5419    0.0871
+  C fit on adaptation + eval              acc   macroF1       MCC
+    Source-only                        0.6320    0.5426    0.0879
+    AdaBN                              0.7320    0.6179    0.2460
+    DIGA                               0.7370    0.5944    0.2199
+    PETAL                              0.6320    0.5426    0.0879
+    PeTTA                              0.6320    0.5426    0.0879
+
+-> results/exp17_occ_reverse.csv
