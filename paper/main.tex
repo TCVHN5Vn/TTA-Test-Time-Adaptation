@@ -131,16 +131,19 @@ adaptation as probabilistic inference, and PeTTA \cite{petta} stabilises adaptat
 environments recur. Whether their assumptions survive the move to one-dimensional sensor
 data is an open question, and the one we set out to answer.
 
-We did not answer it in the form we expected. Our first experiments reproduced the
-standard pipeline and produced the standard picture: a source model validating near
-$0.99$ \macf{} and collapsing to $0.16$ on a second apartment, which reads as severe
-domain shift. Most of that drop turned out to be an artefact of how the validation split
-was constructed. Features are computed over sliding windows with unit stride, so
-consecutive samples share $19$ of their $20$ timesteps; a random split puts a
-$95\%$-identical copy of nearly every validation sample into training. Grouping the split
-by recording day instead --- a one-line change --- moves source validation from $0.998$ to
-$0.53$ and leaves the target number essentially untouched. The gap that motivates this
-literature shrinks accordingly.
+Answering it requires first establishing that the quantity these methods are asked to
+reduce is measured soundly, and we began there. Implementing the standard pipeline
+reproduces the picture the literature reports: a source model validating near $0.99$
+\macf{} and scoring $0.16$ on a second apartment, a drop that reads as severe domain
+shift. That measurement does not survive scrutiny. Features are computed over sliding
+windows with unit stride, so consecutive samples share $19$ of their $20$ timesteps, and a
+random train/validation split places a $95\%$-identical copy of nearly every validation
+sample into training. We isolate the effect by varying the window definition and the split
+independently: the window moves source validation by under two points, the split moves it
+by forty-six. Grouping by recording day --- a one-line change --- gives $0.53$ and leaves
+the target number essentially untouched. The gap that motivates this literature is
+therefore substantially smaller than reported, and the remainder of this paper measures
+both domains under the same protocol.
 
 Once the protocol is fixed, the picture changes in a way that is more interesting than
 the original. Most of the remaining gap is attributable not to some irreducible property
@@ -580,8 +583,10 @@ source-only.
 \subsection{Decomposing the source-domain fit}
 \label{sec:res-leak}
 
-Table~\ref{tab:leak} and Fig.~\ref{fig:leakage} vary the window definition and the
-validation split independently, holding the feature arithmetic fixed.
+Establishing what the cross-building gap actually is requires measuring both domains
+under one protocol. Table~\ref{tab:leak} and Fig.~\ref{fig:leakage} vary the window
+definition and the validation split independently, holding the feature arithmetic fixed,
+which separates the contribution of each.
 
 % source: results/exp4_windowing.csv  (src/exp4_windowing.py), 5 seeds
 \begin{table*}[t]
@@ -1115,8 +1120,8 @@ tasks and two directions each, neither method has changed a prediction.
 \label{sec:discussion}
 
 The headline result of this study is not about any one method. It is that the quantity
-these methods are asked to repair --- the cross-building performance drop --- was being
-measured in a way that substantially overstated it, and that most of what remains once it is
+these methods are asked to repair --- the cross-building performance drop --- is routinely
+measured in a way that substantially overstates it, and that most of what remains once it is
 measured consistently is attributable to feature design rather than to anything TTA can
 reach.
 
