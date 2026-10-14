@@ -922,6 +922,37 @@ elsewhere, and routines differ. Relabelling cannot recover information that was 
 shared.
 
 \subsection{Three mechanisms}
+\label{sec:res-mech-intro}
+
+A natural objection to what follows is that these methods were designed for images, so
+their failure on one-dimensional data is to be expected. The results do not support that
+reading, for three reasons.
+
+First, the picture is not uniform. DIGA improves on the deployable checkpoint with a
+bootstrap interval excluding zero, and AdaBN --- the simplest normalisation-based
+adaptation there is --- gains $41.5$ MCC points in one occupancy direction
+(Table~\ref{tab:oe-rev}). Methods built for images are evidently capable of helping on
+sensor data; whether they do turns out to depend on the source checkpoint rather than on
+the modality.
+
+Second, PETAL's failure has nothing to do with modality. Setting $\bar\lambda=0$ deletes
+the likelihood term from Eq.~\ref{eq:petal} on any data, images included. What the move to
+sensor data changes is only which value a target-label search selects, and even that
+follows a statable condition rather than the modality.
+
+Third, PeTTA's failure is modality-related but not in the way the objection supposes. The
+method does not degrade gracefully; it stops entirely and silently, with losses that look
+unremarkable throughout. The mechanism is a scalar that reaches exactly $1$ and multiplies
+the update rate by zero. Establishing that is the contribution, not the observation that
+image methods sometimes do worse elsewhere.
+
+On implementation: each method is implemented from the equations and hyperparameters given
+in its source paper, and we report both the published settings and any retuned ones where
+they differ materially. For PeTTA we additionally confirmed the behaviour against the
+authors' released implementation, in which the divergence statistic is computed as a sum
+over the embedding dimension (\texttt{per\_class\_distance}), which is what produces the
+saturation reported below. The PETAL result requires no implementation at all: it follows
+from Algorithm~2 of the source paper.
 \label{sec:res-mech}
 
 \paragraph{PETAL: the coefficient scales the likelihood.} As noted in
