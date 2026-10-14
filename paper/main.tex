@@ -791,8 +791,10 @@ TENT  & non-recurring & $[-0.1756,\,-0.1383]$ & $[-0.3050,\,-0.2503]$ \\
 \end{tabular}
 \end{table*}
 
-In Table~\ref{tab:boot}, DIGA is the only method whose interval excludes zero on the positive side, and the effect
-is small: $+1.7$ \macf{} and $+2.2$ MCC points. For comparison, the feature redesign is
+In Table~\ref{tab:boot}, DIGA is the only method whose interval excludes zero on the
+positive side, and the effect is small: $+1.7$ \macf{} and $+2.2$ MCC points. It is also
+contingent on how two under-specified steps of the method are implemented, which
+Section~\ref{sec:res-digaimpl} quantifies. For comparison, the feature redesign is
 worth $+17.0$ \macf{} points before any adaptation runs. PETAL and PeTTA are statistically
 indistinguishable from the unadapted model. AdaBN and TENT are substantially
 \emph{worse} --- around $17$ points of \macf{} --- which is itself informative: adapting
@@ -1067,6 +1069,53 @@ DIGA's own evaluation makes a point of using a single global parameter set acros
 experiments, in explicit contrast to competitors tuned per source--target pair. That
 property does not survive the move to one-dimensional sensor data, and recovering the loss
 required tuning on target labels, which deployment does not provide.
+
+\subsection{How much of DIGA's gain survives implementation choices?}
+\label{sec:res-digaimpl}
+
+Two steps of DIGA are specified in a way that admits more than one implementation, and the
+difference is not cosmetic.
+
+The first is the DAM. Eq.~\ref{eq:dam} blends batch-normalisation \emph{statistics}, after
+which the input is normalised once. An alternative is to normalise twice --- with source
+statistics and with batch statistics --- and blend the two normalised \emph{outputs}. These
+are different operations, and a reference implementation in circulation takes the second
+route while citing the first equation.
+
+The second is the fusion step. Eq.~\ref{eq:diga-fuse} combines \emph{probabilities}. The
+same implementation combines a cosine similarity, bounded in $[-1,1]$, with unbounded
+classifier logits, so the relative weight of the two terms depends on logit scale rather
+than on $\lambda_F$ alone.
+
+Table~\ref{tab:digaimpl} evaluates all four combinations under the protocol of
+Table~\ref{tab:tta}.
+
+% source: variants of src/tta.py DIGA under the exp6 protocol, 3 seeds, 2000 resamples
+\begin{table*}[t]
+\centering
+\caption{DIGA under four readings of its two under-specified steps, non-recurring stream,
+3 seeds. Source-only is $0.4473$. Only the reading that follows both published equations
+yields an interval excluding zero.}
+\label{tab:digaimpl}
+\small
+\begin{tabular}{llcc}
+\toprule
+DAM & Fusion & \macf & $95\%$ CI on $\Delta$ \\
+\midrule
+blend statistics (Eq.~\ref{eq:dam}) & probabilities (Eq.~\ref{eq:diga-fuse}) & $\mathbf{0.4605}$ & $[+0.0012,\,+0.0181]$ \\
+blend outputs & probabilities & $0.4562$ & $[-0.0043,\,+0.0139]$ \\
+blend statistics & similarity $+$ logits & $0.4537$ & $[-0.0044,\,+0.0106]$ \\
+blend outputs & similarity $+$ logits & $0.4540$ & $[-0.0084,\,+0.0084]$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The gain is positive under all four readings and statistically distinguishable from zero
+under only one. We report DIGA throughout using the published equations, which is the
+reading most favourable to the method, and note here that a reader reimplementing it from
+the paper's prose may obtain no measurable benefit. The point is not that one reading is
+correct. It is that the single measurable adaptation gain in this study is of a size
+comparable to the ambiguity in the method's own description.
 
 \subsection{Occupancy estimation}
 \label{sec:res-oe}
