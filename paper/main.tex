@@ -501,9 +501,11 @@ selection discussed next is tier 3.
 
 We report results using each method's \emph{published} hyperparameters, and separately
 under target-label tuning where the two differ materially. Selecting on target labels is
-not available in deployment, and Section~\ref{sec:res-mech} shows it can actively select a
-degenerate configuration. Where a label-free criterion is needed we use mean prediction
-entropy on the target stream.
+tier 3 by the distinction above and is not available in deployment. It is also not merely
+optimistic: Section~\ref{sec:res-mech} shows it selecting a configuration at which one
+method cannot adapt at all, and reporting the maximum of a distribution that is mostly
+negative for another. Where a label-free criterion is needed we use mean prediction
+entropy on the target stream, and report what it selects alongside the oracle value.
 
 % ============================================================================
 \section{Experimental setup}
@@ -943,10 +945,19 @@ $10.0$ & $0.1688$ & $22/3412$ & $0.4637$ & $0.4677$ \\
 \end{table*}
 
 The consequence is specific. On a source model that already outperforms what self-training
-produces, selecting $\bar\lambda$ by target-domain \macf{} --- the criterion we and others
-have used --- prefers $\bar\lambda=0$, the setting at which adaptation cannot occur. A
-reported null for PETAL obtained this way is a statement about the search procedure, not
-about the method.
+produces, selecting $\bar\lambda$ by target-domain \macf{} --- a criterion in common use
+--- prefers $\bar\lambda=0$, the setting at which adaptation cannot occur. A reported null
+for PETAL obtained this way is a statement about the search procedure, not about the
+method.
+
+The same selection rule distorts DIGA, in the opposite direction. Running its full
+published grid (Section~\ref{sec:background}, $64$ configurations) on the occupancy task,
+$83\%$ of configurations \emph{reduce} MCC relative to source-only; the median
+configuration costs $1.4$ points and the best gains $0.9$. Reporting the maximum of that
+distribution, which is what selection on target labels returns, describes the tail rather
+than the method. A label-free rule --- lowest mean prediction entropy on the target
+stream --- selects a configuration costing $1.4$ points, which is close to the median and
+is what a deployment would actually obtain.
 
 \paragraph{PeTTA: the divergence signal saturates.} Fig.~\ref{fig:saturation} shows why.
 Eq.~\ref{eq:petta-gamma} sums over the
