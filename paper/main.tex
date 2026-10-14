@@ -81,8 +81,9 @@ features that dominate the usual design score \emph{below} stratified-random gue
 the target in both directions, because a given sensor index is a different physical device
 in each building. One pattern recurs across every design choice we varied --- which features, how long
 the window, how much temporal context --- and in both transfer directions: the
-configuration that validates best in-domain transfers worst. Selecting a model on
-in-domain accuracy systematically selects the worst one to deploy elsewhere.
+configuration that validates best in-domain transfers worst. On this data, selecting a
+model by in-domain accuracy selects the worst one to deploy elsewhere; whether that holds
+beyond these two apartments is untested.
 
 Against that baseline the three methods behave differently, and each failure
 traces to a specific published equation rather than to our port. PETAL's coefficient
@@ -1081,10 +1082,11 @@ different design decisions, both directions.
 A single mechanism accounts for all of them. Every one of these choices increases the
 model's access to building-specific regularity: which device fired, what the routine looks
 like over an hour, how this occupant sequences their morning. In-domain that is signal.
-Across buildings it is noise with the wrong sign. The practical consequence deserves to be
-stated plainly, because it inverts standard practice: for cross-building deployment,
-in-domain validation accuracy is not merely an imperfect model-selection criterion, it is
-an actively misleading one.
+Across buildings it is noise with the wrong sign. The practical consequence, stated with the scope
+it has earned: in this data, for cross-building deployment, in-domain validation accuracy
+was not merely an imperfect model-selection criterion but an actively misleading one.
+Whether that holds beyond these two apartments is open, and Section~\ref{sec:discussion}
+returns to what would settle it.
 
 This reframes what per-sensor features cost. In-domain they are valuable: the best
 source-validation score in Table~\ref{tab:features} belongs to a set that retains them.
@@ -1111,6 +1113,32 @@ labels, which is standard in this literature, is not merely optimistic. It can s
 make a method appear to transfer when what transferred was the tuning. A label-free
 criterion should be reported alongside any oracle-tuned number.
 
+\paragraph{What generalises, and what does not.} The findings above differ in how far
+they travel, and it is worth separating them.
+
+Two do not depend on this dataset at all. PETAL's $\bar\lambda$ multiplies the
+cross-entropy in its published objective (Eq.~\ref{eq:petal}), so $\bar\lambda=0$ removes
+the data term on any dataset, in any modality; the only dataset-specific part of our
+result is that tuning on target labels happened to select it. PeTTA's gating function
+likewise saturates whenever the summed Mahalanobis statistic is large, which is a property
+of summing over embedding dimensions rather than of these apartments --- though whether
+the statistic reaches that regime does depend on how far apart the domains are, and the
+authors' own traces on image corruptions sit at $0.8$--$1.0$ rather than at unity.
+
+The evaluation result is a property of a procedure rather than of a dataset: stride-$1$
+windowing with a random validation split places near-duplicates across the split whenever
+windows overlap, which is common in sensor-based HAR.
+
+The inversion is different in kind. We observe it five times across four design decisions
+and in both transfer directions, which rules out a one-off, but all five observations come
+from the same two apartments. We therefore state it as an empirical regularity of this
+data rather than as a general law: \emph{in this dataset, across every design choice we
+varied, the configuration selected by in-domain validation was the one that transferred
+worst.} If it holds more widely it inverts standard model-selection practice for
+cross-building deployment, and we think the mechanism --- that each of these choices
+increases access to building-specific regularity --- is general enough to be worth
+testing elsewhere. Establishing that requires datasets with more than two environments.
+
 \paragraph{Limitations.} The study rests on one HAR dataset and two apartments from it.
 Running both transfer directions rules out a direction-specific fluke but says nothing
 about other buildings, other sensor modalities, or richer activity sets; external validity
@@ -1136,7 +1164,9 @@ rather than costing anything.
 
 Across every design choice we varied --- feature set, window length, temporal context ---
 and in both transfer directions, the configuration that validated best in-domain
-transferred worst. Under the grouped protocol the cross-building gap is $9$ to $15$ points depending on
+transferred worst. Five observations on two apartments do not establish a general law, but
+they do establish that in-domain validation cannot be assumed safe for cross-building
+model selection. Under the grouped protocol the cross-building gap is $9$ to $15$ points depending on
 direction, and most of it is attributable to features that encode sensor identity. Those
 features score below stratified-random guessing on the target in both directions. The
 feature set that validates best in-domain transfers worst, also in both directions.
