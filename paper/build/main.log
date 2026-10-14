@@ -910,78 +910,78 @@ tim
 \openout5 = `main.abs'.
 
 LaTeX Font Info:    Trying to load font information for LS1+stixscr on input li
-ne 109.
+ne 108.
 (ls1stixscr.fd
 File: ls1stixscr.fd 2015/04/17 v1.1.2-latex STIX script LS1 font definitions
 )
 LaTeX Font Info:    Trying to load font information for LS2+stixex on input lin
-e 109.
+e 108.
  (ls2stixex.fd
 File: ls2stixex.fd 2015/04/17 v1.1.2-latex STIX extentions LS2 font definitions
 
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 109
+LaTeX Font Info:    Trying to load font information for U+msa on input line 108
 .
  (umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 109
+LaTeX Font Info:    Trying to load font information for U+msb on input line 108
 .
  (umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for LS1+stixfrak on input l
-ine 109.
+ine 108.
  (ls1stixfrak.fd
 File: ls1stixfrak.fd 2015/04/17 v1.1.2-latex STIX fraktur LS1 font definitions
 )
 LaTeX Font Info:    Trying to load font information for LS1+stixbb on input lin
-e 109.
+e 108.
 
 (ls1stixbb.fd
 File: ls1stixbb.fd 2015/04/17 v1.1.2-latex STIX blackboard LS1 font definitions
 
 )
 LaTeX Font Info:    Trying to load font information for LS2+stixcal on input li
-ne 109.
+ne 108.
  (ls2stixcal.fd
 File: ls2stixcal.fd 2015/04/17 v1.1.2-latex STIX calligraphic LS2 font definiti
 ons
 )
 LaTeX Font Info:    Trying to load font information for LS1+stixsf on input lin
-e 109.
+e 108.
  (ls1stixsf.fd
 File: ls1stixsf.fd 2015/04/17 v1.1.2-latex STIX sans-serif LS1 font definitions
 
 )
 LaTeX Font Info:    Trying to load font information for LS2+stixtt on input lin
-e 109.
+e 108.
  (ls2stixtt.fd
 File: ls2stixtt.fd 2015/04/17 v1.1.2-latex STIX typewriter LS2 font definitions
 
 )
-Overfull \hbox (123.62721pt too wide) detected at line 109
+Overfull \hbox (123.62721pt too wide) detected at line 108
 []
  []
 
 (main.abs)
 
-Package hyperref Warning: Ignoring empty anchor on input line 109.
+Package hyperref Warning: Ignoring empty anchor on input line 108.
 
 
-Package hyperref Warning: Ignoring empty anchor on input line 109.
+Package hyperref Warning: Ignoring empty anchor on input line 108.
 
 File: thumbnails/cas-email.jpeg Graphic file (type bmp)
 <thumbnails/cas-email.jpeg>
 LaTeX Font Info:    Trying to load font information for T1+zi4 on input line 10
-9.
+8.
 (t1zi4.fd
 File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 6.80005pt on input line 109.
+(Font)              scaled to size 6.80005pt on input line 108.
 LaTeX Font Info:    Trying to load font information for T1+lmss on input line 1
-47.
+46.
  (t1lmss.fd
 File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [1
@@ -989,95 +989,117 @@ File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 
 ]
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 8.50006pt on input line 153.
+(Font)              scaled to size 8.50006pt on input line 152.
+
+Overfull \hbox (3.23045pt too wide) in paragraph at lines 167--173
+[]\T1/stix/m/n/10 That asym-me-try or-gan-ises ev-ery-thing that fol-lows. Wher
+e
+ []
+
 LaTeX Font Info:    Trying to load font information for TS1+stix on input line 
-174.
- (ts1stix.fd
+177.
+(ts1stix.fd
 File: ts1stix.fd 2015/04/17 v1.1.2-latex STIX TS1 font definitions
 )
-Overfull \hbox (0.96552pt too wide) in paragraph at lines 179--184
+Underfull \hbox (badness 1721) in paragraph at lines 178--182
+[]\T1/stix/b/n/10 A cross-building penalty mea-sured against the
+ []
+
+
+Underfull \hbox (badness 1152) in paragraph at lines 178--182
+\T1/stix/m/n/10 the eval-u-a-tion set fixed and match-ing training-set
+ []
+
+
+Overfull \hbox (0.96552pt too wide) in paragraph at lines 183--188
 []\T1/stix/b/n/10 Adaptation gain mea-sures source-model de-fi-ciency,
  []
 
 
-Underfull \hbox (badness 1173) in paragraph at lines 185--189
+Underfull \hbox (badness 1173) in paragraph at lines 189--193
 []\T1/stix/b/n/10 Three mech-a-nisms by which image-domain as-
  []
 
 
-Underfull \hbox (badness 1681) in paragraph at lines 185--189
+Underfull \hbox (badness 1681) in paragraph at lines 189--193
 \T1/stix/m/n/10 PeTTA's di-ver-gence sig-nal sat-u-rates, and DIGA's
  []
 
 
-Underfull \hbox (badness 1442) in paragraph at lines 185--189
+Underfull \hbox (badness 1442) in paragraph at lines 189--193
 \T1/stix/m/n/10 ad-ver-tised global hy-per-pa-ram-e-ters do not trans-fer
  []
 
 [2]
-LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <5> not available
-(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 346.
- [3]
-LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <7> not available
-(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 375.
-LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <9> not available
-(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 379.
- [4]
-LaTeX Font Info:    Font shape `T1/zi4/b/n' will be
-(Font)              scaled to size 8.50006pt on input line 415.
+Underfull \hbox (badness 1675) in paragraph at lines 245--253
+\T1/stix/m/n/10 and de-rives a student--teacher ob-jec-tive with a source-
+ []
 
-Overfull \hbox (2.4055pt too wide) in paragraph at lines 430--436
+[3]
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <5> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 350.
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <7> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 379.
+LaTeX Font Info:    Font shape `T1/lmss/m/it' in size <9> not available
+(Font)              Font shape `T1/lmss/m/sl' tried instead on input line 383.
+LaTeX Font Info:    Font shape `T1/zi4/b/n' will be
+(Font)              scaled to size 8.50006pt on input line 419.
+
+Overfull \hbox (2.4055pt too wide) in paragraph at lines 434--440
 []\T1/stix/m/n/10 We there-fore eval-u-ate a $\LS1/stix/m/n/10 13$\T1/stix/m/n/
 10 -dimensional \T1/stix/b/n/10 layout-invariant
  []
 
+[4]
 File: figures//fig_pca.pdf Graphic file (type pdf)
 <use figures//fig_pca.pdf>
 
-Overfull \hbox (8.5555pt too wide) in paragraph at lines 485--488
+Overfull \hbox (8.5555pt too wide) in paragraph at lines 489--492
 []\T1/stix/m/n/10 Everything is es-ti-mated on the source.
  []
 
-[5]
-Overfull \hbox (0.88556pt too wide) in paragraph at lines 571--577
+[5] [6]
+Overfull \hbox (0.88556pt too wide) in paragraph at lines 588--594
 \T1/stix/m/n/10 random pre-dic-tion gives ac-cu-racy $\LS1/stix/m/n/10 0\LS1/st
 ix/m/it/10 :\LS1/stix/m/n/10 306$ \T1/stix/m/n/10 and macro-F$[]$ $[]$.
  []
 
 File: figures//fig_leakage.pdf Graphic file (type pdf)
 <use figures//fig_leakage.pdf>
-[6]
-Overfull \hbox (1.09047pt too wide) in paragraph at lines 685--692
+
+Overfull \hbox (1.09047pt too wide) in paragraph at lines 702--710
 []\T1/stix/m/n/10 Two ob-ser-va-tions. Per-sensor fea-tures alone reach $\LS1/s
 tix/m/n/10 0\LS1/stix/m/it/10 :\LS1/stix/m/n/10 1484$
  []
 
 File: figures//fig_features.pdf Graphic file (type pdf)
 <use figures//fig_features.pdf>
-[7] [8] [9] [10]
+[7] [8] [9] [10] [11]
 File: figures//fig_saturation.pdf Graphic file (type pdf)
 <use figures//fig_saturation.pdf>
-
-Underfull \hbox (badness 1127) in paragraph at lines 1070--1077
+ [12]
+Underfull \hbox (badness 1127) in paragraph at lines 1199--1206
 \T1/stix/m/n/10 con-firm-ing that $\LS2/stixex/m/n/10 ê\LS1/stixscr/m/n/10 ^^L\
 LS1/stix/m/it/10 ; \LS1/stixscr/m/n/10 ^^L\LS2/stixex/m/n/10 ë$ \T1/stix/m/n/10
  must de-note a dis-sim-i-lar-ity. More
  []
 
-[11] [12] [13] [14]
-Underfull \hbox (badness 1072) in paragraph at lines 1363--1365
+[13] [14] [15]
+Underfull \hbox (badness 1072) in paragraph at lines 1488--1490
  []\T1/stix/m/it/11 What gen-er-alises, and what does not.[] \T1/stix/m/n/10 Th
 e find-ings
  []
 
-
-Overfull \hbox (13.96715pt too wide) in paragraph at lines 1447--1455
+[16]
+Overfull \hbox (13.96715pt too wide) in paragraph at lines 1575--1583
 \T1/stix/m/n/10 able at [][]$\T1/zi4/m/n/10 https : / / github . com / TCVHN5Vn
  / TTA-[]Test-[]Time-[]Adaptation$[][]\T1/stix/m/n/10 .
  []
 
-[15] [16] (main.aux)
+[17] [18
+
+] (main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  )
-Output written on main.xdv (16 pages, 209936 bytes).
+Output written on main.xdv (18 pages, 225420 bytes).

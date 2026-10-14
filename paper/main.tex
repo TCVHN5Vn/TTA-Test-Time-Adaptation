@@ -81,23 +81,22 @@ inflation comes from the split. Features matter as much. The $106$ per-sensor fe
 that dominate the usual design score \emph{below} stratified-random guessing on the target
 in both directions, because a given sensor index is a different physical device in each
 building. With causal windows that an online system can compute, and thirteen
-window-level summary statistics that name no sensor, source and target \macf{} are $0.534$
-and $0.447$ in one transfer direction and $0.454$ and $0.307$ in the reverse, a gap of $9$
-to $15$ points instead of $83$. One pattern recurs across every design choice we varied
-(which features, how long the window, how much temporal context) and in both transfer
-directions: the configuration that validates best in-domain transfers worst. On this data,
-selecting a model by in-domain accuracy selects the worst one to deploy elsewhere; whether
-that holds beyond these two apartments is untested.
+window-level summary statistics that name no sensor, a model transfers to the second
+apartment within $0.6$ \macf{} points of a model trained on that apartment's own days, at
+matched training-set size and on the same held-out days. Entering the first apartment the
+same comparison costs $21.3$ points. One of the two directions therefore contains
+essentially no domain shift, which the conventional source-minus-target figure of $8.8$
+points conceals by charging the transfer for a difference between the buildings.
 
 Against that baseline the three methods behave differently, and each result traces to a
 specific published equation, not to our port. PETAL's coefficient weights the likelihood,
 so the value selected by tuning on target labels removes the learning signal entirely.
 PeTTA gates its update rate on a Mahalanobis distance summed over $64$ embedding
 dimensions; across buildings that sum is large enough that the gate saturates and the
-teacher stops updating. DIGA does help, by $1.7$ \macf{} points with a bootstrap interval
-excluding zero, but only with hyperparameters retuned on target labels, and across its
-full published grid the sign of the effect follows the source checkpoint rather than the
-setting. Our conclusion is not that TTA fails in smart buildings, but that it was being
+teacher stops updating. DIGA does help where there is headroom, but modestly and conditionally: $1.7$ \macf{}
+points with hyperparameters retuned on target labels, $0.3$ under a label-free criterion,
+and across its full published grid the sign of the effect follows the direction of
+transfer rather than the setting. Our conclusion is not that TTA fails in smart buildings, but that it was being
 asked to repair a problem largely created by evaluation and feature design.
 \end{abstract}
 
@@ -154,27 +153,32 @@ because \texttt{sensor\_id\_100} is a different physical device in each apartmen
 built from thirteen layout-invariant window statistics transfers far better while
 validating slightly worse in-domain.
 
-That inversion is the central finding of this paper, and it is not confined to the choice
-of features. We observed it four more times, in both transfer directions: longer windows
-validate better and transfer worse; added temporal context does the same; and in the
-reverse direction the conventional feature vector attains the best source-validation
-score of any configuration we tried and the worst target score, below chance. The
-practical consequence is immediate and uncomfortable. Choosing a checkpoint by in-domain
-validation, the ordinary thing to do, systematically picks the model that will
-perform worst in the next building.
+With the features fixed, the question of what cross-building transfer actually costs can
+be put properly. Source-validation minus target performance, the quantity usually quoted,
+compares one building with another and so moves whenever the two differ in difficulty,
+whether or not anything transfers badly. Holding the evaluation set fixed and varying only
+where the training labels came from gives a different answer, and an asymmetric one. Into
+the second apartment, a model trained on the first scores within $0.6$ points of a model
+trained on the second apartment's own days, at matched training-set size: there is
+essentially no cross-building penalty to speak of. Into the first apartment the same
+comparison costs $21.3$ points. The price of changing building is not one number, and in
+one of these two directions it is close to zero.
 
-What remains for adaptation to do is correspondingly small, and the three methods divide
-cleanly. One helps a little. Two do not run at all, and in both cases the reason is
-specific, mechanical, and traceable to an equation in the original paper rather than to
-our implementation.
+That asymmetry organises everything that follows. Where there is no penalty there is
+nothing for adaptation to recover, and every method we test loses ground; where the
+penalty is real, the one method that can act within a short stream gains. The three
+methods otherwise divide cleanly. One helps a little. Two do not move at all, and in both
+cases the reason is specific, mechanical, and traceable to the original paper rather than
+to our implementation.
 
 Our contributions are as follows.
 
 \begin{itemize}
-\item \textbf{In-domain fit anti-correlates with cross-building transfer}, shown across
-  feature sets, window length and temporal context, in both transfer directions
-  (Sections~\ref{sec:res-feat} and~\ref{sec:res-ceiling}). Per-sensor features, which
-  drive most of the effect, score below stratified-random on the target either way.
+\item \textbf{A cross-building penalty measured against the right ceiling, and found to
+  be asymmetric.} Holding the evaluation set fixed and matching training-set size, the
+  penalty is $0.6$ points entering one apartment and $21.3$ entering the other
+  (Section~\ref{sec:res-gap}). Per-sensor features are what create the apparent gap:
+  used alone they score below stratified-random on the target in both directions.
 
 \item \textbf{Adaptation gain measures source-model deficiency, not adaptation quality.} On cross-office
   occupancy estimation the two transfer directions differ only in the quality of the
@@ -502,6 +506,19 @@ selection discussed next is tier 3.
 \subsection{Hyperparameter selection}
 \label{sec:method-hparam}
 
+\paragraph{Two evaluation protocols, and which number belongs to which.} Results that
+compare \emph{configurations} use the full protocol: GroupKFold over \texttt{year\_day},
+$3$ seeds $\times$ $5$ folds, causal median smoothing at $L=41$, scored on the whole target
+stream. Source-only there is \macf{} $0.4466$ (S1$\to$S2). Results that compare
+\emph{adaptation methods} run a single stream over a single source checkpoint, since a
+streaming method cannot be averaged over folds without restarting its state; those use the
+last GroupKFold fold, no smoothing, and source-only is $0.4944$ averaged over the same
+three seeds. The two differ because smoothing adds about $1$ point, fold choice a little
+more, and the single-split source model has a seed spread of $0.027$. Tables~\ref{tab:lambda}
+and~\ref{tab:diga} predate the three-seed convention and quote the seed-$0$ value of that
+same checkpoint, $0.4641$; we give both so no figure in this paper is unattributable to a
+protocol. Comparisons are always within a protocol, never across.
+
 We report results using each method's \emph{published} hyperparameters, and separately
 under target-label tuning where the two differ materially. Selecting on target labels is
 tier 3 by the distinction above and is not available in deployment. It is also not merely
@@ -684,11 +701,12 @@ Per-sensor only       & z-score     & 106 & $0.3292$ & $0.1484$ & $0.0436$ \\
 
 Two observations. Per-sensor features alone reach $0.1484$ \macf, which is $5.1$ points
 \emph{below} stratified-random guessing. They are not weakly informative; they encode
-rules that are wrong in the target building. And the row with the best source-validation
-score (KS-pruned with rank-gauss, $0.6232$) transfers at $0.3004$, while the row that
-transfers best ($0.4133$) validates at $0.5341$. In-domain fit and cross-building transfer
-pull in opposite directions, because what helps in-domain is precisely what is
-building-specific.
+rules that are wrong in the target building. And the ordering by source validation is not
+the ordering by transfer: the best-validating row (KS-pruned with rank-gauss, $0.6232$)
+transfers at $0.3004$, while the best-transferring row ($0.4133$) validates $8.9$ points
+lower. Across the eight rows the two columns are still positively related
+($\rho=+0.69$), so this is a reordering near the top and not a reversal; what it costs a
+practitioner is quantified in Section~\ref{sec:res-gap}.
 
 Table~\ref{tab:both-dir} and Fig.~\ref{fig:features} repeat the comparison in both
 directions.
@@ -729,10 +747,11 @@ below chance in one of them.}
 \label{fig:features}
 \end{figure*}
 
-Both central claims replicate. Per-sensor features are below chance in both directions.
-The inversion is sharper in reverse: the conventional $135$-d set has the best
-source-validation score of any row ($0.5381$) and the worst transfer ($0.1583$), itself
-$4.2$ points below chance.
+The below-chance result replicates: per-sensor features fall short of stratified-random
+guessing in both directions. The reordering is sharper in reverse, where the conventional
+$135$-d set has the best source-validation score of any row ($0.5381$) and the worst
+transfer ($0.1583$), itself $4.2$ points below chance. Choosing between these four feature
+sets by source validation alone would select that row.
 
 The gap is direction-dependent: $8.8$ points forward and $14.7$ reverse. The asymmetry has
 a visible cause rather than being noise. S2 is the weaker source: $3412$ samples
@@ -740,6 +759,76 @@ against $5031$, with the hard classes much thinner ($113$ versus $442$ for
 \texttt{cleaning}) --- and training on the smaller, more imbalanced apartment lowers both
 sides of the comparison. We therefore state the result as a gap of $9$ to $15$ points
 instead of quoting the more favourable direction.
+
+\subsection{What does changing building actually cost?}
+\label{sec:res-gap}
+
+Table~\ref{tab:both-dir} reports source-validation minus target \macf{} and calls it a
+gap, as is conventional. That quantity compares performance on one building with
+performance on another, so it moves whenever the two differ in difficulty, whether or not
+anything transfers badly. S1 and S2 do differ: $5031$ samples against $3412$, and $442$
+\texttt{cleaning} windows against $113$. Part of the $8.8$ and $14.7$ points is the
+buildings, not the transfer.
+
+The quantity that isolates domain shift holds the evaluation set fixed and varies only
+where the training labels came from. For each apartment in turn we train one model on
+that apartment's own days and another on the other apartment entirely, and score both on
+the same held-out days under GroupKFold, with identical features, folds and smoothing.
+Training-set sizes are matched by subsampling, because S2 has two thirds of S1's data and
+an unmatched comparison would charge domain shift for a difference in sample count.
+
+% source: src/exp21_domain_gap.py -> results/exp21_matched.csv
+\begin{table}[t]
+\centering
+\caption{Cross-building penalty on a fixed evaluation set at matched training-set size,
+$3$ seeds $\times$ $5$ folds. \emph{Own days} trains on the target apartment; \emph{other
+building} trains on the source apartment. The difference is what a deployment pays for
+having no labels in the new building.}
+\label{tab:gap}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Evaluated on & Own days & Other building & Penalty \\
+\midrule
+S2 held-out days & $0.3497$ & $0.3434$ & $\mathbf{0.6}$ pts \\
+S1 held-out days & $0.4897$ & $0.2767$ & $21.3$ pts \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The penalty is not one number. Entering S2 it is $0.6$ points, which is well inside the
+seed spread of either model and is not distinguishable from zero. A model that has never
+seen S2 performs as well on S2 as a model trained on S2's own days. Entering S1 the same
+comparison costs $21.3$ points.
+
+Two things follow, and both matter for how the rest of this paper should be read.
+
+The first is that the conventional gap figure overstates the forward direction badly. The
+$8.8$ points of Table~\ref{tab:both-dir} are almost entirely the difference between the
+two apartments as prediction problems, not the cost of moving between them. Reported
+cross-building drops that take this form should be read the same way.
+
+The second is that one of our two transfer directions contains no domain shift for a
+method to correct. This is not a limitation of the experiment but the most useful thing in
+it: it provides a control. A test-time adaptation method run on S1$\to$S2 is being asked
+to improve a model that is already performing at its target ceiling, and any movement it
+produces can only be downward. Run on S2$\to$S1 the same method has $21$ points of genuine
+headroom. Section~\ref{sec:res-hgrid} shows the published methods behaving exactly along
+that line, and Section~\ref{sec:res-oe} reproduces the same split on a second task.
+
+\paragraph{Does in-domain validation predict transfer?} The asymmetry above raises the
+related question of whether source-domain fit is a usable guide when choosing what to
+deploy. Pooling every configuration in this study for which we have a matched
+source-validation and target score ($70$ in total, across feature sets, transforms,
+window lengths, classifier families and temporal models), the rank correlation is
+$+0.63$ ($p<0.001$). In-domain validation is therefore positively informative overall,
+and we make no claim to the contrary. Among configurations that are actually competitive,
+however, it degrades: restricting to those validating at $0.48$ or above leaves
+$\rho=+0.27$ ($p=0.11$), and the single best-validating configuration is not the best
+transferring one in either direction of Table~\ref{tab:both-dir}. The honest summary is
+that in-domain validation separates working configurations from broken ones and carries
+little information beyond that, which is the regime a practitioner choosing between
+reasonable alternatives is in.
 
 \subsection{Test-time adaptation on the deployable checkpoint}
 \label{sec:res-tta}
@@ -986,9 +1075,49 @@ $10.0$ & $0.1688$ & $22/3412$ & $0.4637$ & $0.4677$ \\
 \end{table*}
 
 The consequence is specific. On a source model that already outperforms what self-training
-produces, selecting $\bar\lambda$ by target-domain \macf{}, a criterion in common use, prefers $\bar\lambda=0$, the setting at which adaptation cannot occur. A reported null
-for PETAL obtained this way is a statement about the search procedure, not about the
-method.
+produces, selecting $\bar\lambda$ by target-domain \macf{}, a criterion in common use,
+prefers $\bar\lambda=0$, the setting at which adaptation cannot occur. A reported null for
+PETAL obtained this way is a statement about the search procedure, not about the method.
+
+$\bar\lambda$ is not, however, the whole of why PETAL is inert here, and the table says so:
+the predictions barely move at any value, including $\bar\lambda=10$. The second reason is
+the length of the stream. This target stream is $3412$ samples, which at batch size $64$
+is $54$ gradient steps. PETAL's published learning rate is $10^{-4}$ and its teacher is an
+exponential moving average at $\pi=0.999$, so after the entire stream the teacher that
+produces the predictions has travelled $1-0.999^{54}=5.3\%$ of the way from the source
+weights toward the student. These values are calibrated for the corruption benchmarks the
+method was developed on, where a single corruption supplies hundreds of batches and the
+full protocol supplies tens of thousands. Fifty-four steps is not a regime in which a
+method built on slow teacher-student drift can express itself.
+
+Table~\ref{tab:petal-budget} tests that reading by removing the constraint. Freeing the
+teacher and raising the learning rate does make PETAL move, and it moves the wrong way at
+every step size.
+
+% source: src/exp22_petal_budget.py
+\begin{table}[t]
+\centering
+\caption{PETAL with the teacher freed ($\pi=0.9$) and the learning rate varied,
+$\bar\lambda=1$ throughout, S1$\to$S2. Source-only is \macf{} $0.4641$. The stream is $54$
+gradient steps in total.}
+\label{tab:petal-budget}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Learning rate & Predictions changed & \macf & MCC \\
+\midrule
+$10^{-4}$ (published) & $52/3412$   & $0.4613$ & $0.4667$ \\
+$10^{-3}$             & $305/3412$  & $0.4149$ & $0.4112$ \\
+$10^{-2}$             & $994/3412$  & $0.3523$ & $0.4006$ \\
+$5\times10^{-2}$      & $1767/3412$ & $0.2400$ & $0.1694$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+This matters for how the null should be read. PETAL is not merely frozen by a budget that
+happens to be too small; when given the budget to act it degrades monotonically. The
+method's inactivity is therefore the best outcome available to it on this data, which is a
+stronger statement than reporting that nothing happened.
 
 The same selection rule distorts DIGA, in the opposite direction. Running its full
 published grid (Section~\ref{sec:background}, $64$ configurations) on the occupancy task,
@@ -1099,8 +1228,10 @@ Table~\ref{tab:tta}.
 \begin{table*}[t]
 \centering
 \caption{DIGA under four readings of its two under-specified steps, non-recurring stream,
-3 seeds. Source-only is $0.4473$. Only the reading that follows both published equations
-yields an interval excluding zero.}
+3 seeds. Source-only is $0.4473$. The four readings are evaluated on identical source
+checkpoints, so the interval is on the paired difference and is much narrower than the
+across-seed spread of any single column ($\sigma\approx0.023$). Only the reading that
+follows both published equations yields an interval excluding zero.}
 \label{tab:digaimpl}
 \small
 \begin{tabular}{llcc}
@@ -1196,11 +1327,11 @@ activity $\text{S}_2$  & \macf{} $0.3226$ & $64/64$ \\
 \end{tabular}
 \end{center}
 
-The fraction of a published grid that helps is monotone in how good the model being adapted
-already is. This is the inversion of Section~\ref{sec:res-feat} seen from the adaptation
-side, and over whole configuration spaces instead of at single points: a model that fits
-its source domain well holds more source-specific structure, which is why it transfers
-worse and why replacing its statistics helps less. Normalisation-statistic adaptation is
+The fraction of a published grid that helps tracks how much headroom the direction has.
+Entering S2 the cross-building penalty is $0.6$ points (Section~\ref{sec:res-gap}) and
+$53$ of $64$ settings lose; entering S1 it is $21.3$ points and all $64$ gain. Read over
+whole configuration spaces rather than at single points, normalisation-statistic
+adaptation is
 not a property of a method that one tunes into working, it is a trade of source-fitted
 statistics for target-fitted ones, and whether that trade pays depends on which of the two
 is better.
@@ -1302,41 +1433,35 @@ measured in a way that substantially overstates it, and that most of what remain
 measured consistently is attributable to feature design and not to anything TTA can
 reach.
 
-Measured consistently on both sides, the gap is $9$ to $15$ points of \macf{} depending on
-direction, against the $83$ points implied by comparing a leakage-inflated source figure
-with an honest target one. A model built from thirteen layout-invariant statistics
-transfers to a different apartment at close to its own in-domain ceiling. That ceiling, in
-turn, becomes the binding constraint: one cannot improve target performance much beyond
-source performance, which is why our attempts to push the source model further (richer
-invariant features, class weighting, wider networks) gained little. Only causal
+Measured against the right ceiling, the cross-building penalty is $0.6$ points entering
+one apartment and $21.3$ entering the other (Section~\ref{sec:res-gap}), against the $83$
+points implied by comparing a leakage-inflated source figure with an honest target one.
+In the forward direction a model built from thirteen layout-invariant statistics performs
+on the second apartment as well as a model trained on that apartment's own days. The
+in-domain ceiling then becomes the binding constraint: one cannot improve target
+performance much beyond it, which is why our attempts to push the source model further
+(richer invariant features, class weighting, wider networks) gained little. Only causal
 smoothing helped, and modestly.
 
-The recurrence of the inversion is what we would most want a reader to take away.
-It appears when choosing features (a set validating at $0.623$ transfers at $0.300$, while
-one validating at $0.534$ transfers at $0.447$), when choosing window length ($0.5611$
-in-domain at $W{=}60$ against $0.4260$ on the target), when adding temporal context (the
-TCN validates at $0.5414$ and transfers at $0.4082$), and in the reverse direction, where
-the conventional $135$-d vector records the best source-validation score of any
-configuration in this study and the worst transfer, below chance. Five instances, four
-different design decisions, both directions.
+The asymmetry is what we would most want a reader to take away, because it decides what
+adaptation can do. Where the penalty is $0.6$ points there is no headroom, and across
+DIGA's full published grid $53$ of $64$ settings lose ground. Where it is $21.3$ points
+all $64$ gain. Occupancy estimation reproduces the same split on a second task and a
+different model family. A reported adaptation gain is therefore first of all a statement
+about the gap the method was given, and only afterwards about the method.
 
-A single mechanism accounts for all of them. Every one of these choices increases the
-model's access to building-specific regularity: which device fired, what the routine looks
-like over an hour, how this occupant sequences their morning. In-domain that is signal.
-Across buildings it is noise with the wrong sign. The practical consequence, stated with the scope
-it has earned: in this data, for cross-building deployment, in-domain validation accuracy
-was not merely an imperfect model-selection criterion but an actively misleading one.
-Whether that holds beyond these two apartments is open, and Section~\ref{sec:discussion}
-returns to what would settle it.
-
-This reframes what per-sensor features cost. In-domain they are valuable: the best
-source-validation score in Table~\ref{tab:features} belongs to a set that retains them.
-Across buildings they are worse than useless, scoring below chance alone in both
-directions. The inversion between in-domain fit and cross-building transfer is, we think,
-the most portable finding here, and it has a practical consequence: model selection on
-in-domain validation will systematically choose the configuration that transfers worst.
-Practitioners selecting a source checkpoint for cross-building deployment should not use
-in-domain accuracy to do it.
+This also reframes what per-sensor features cost, and what in-domain validation is worth.
+In-domain those features are valuable: the best source-validation score in
+Table~\ref{tab:features} belongs to a set that retains them. Across buildings they are
+worse than useless, scoring below chance alone in both directions. The consequence for
+model selection is real but narrower than the extremes of those tables suggest. Pooled
+over all $70$ configurations in this study, source validation and target performance are
+positively correlated ($\rho=+0.63$, $p<0.001$); among competitive configurations the
+relationship weakens to $\rho=+0.27$ ($p=0.11$), and the best-validating configuration is
+not the best-transferring one in either direction. In-domain validation reliably separates
+working configurations from broken ones. Between reasonable alternatives, which is the
+choice a practitioner actually faces, it carries little information about which will
+survive a change of building, and a held-out building is what settles it.
 
 On the methods themselves, the three failures are instructive precisely because they are
 different from one another. PETAL's is a reading failure with a sharp edge: a coefficient
@@ -1376,17 +1501,19 @@ authors' own traces on image corruptions sit at $0.8$--$1.0$ rather than at unit
 
 The evaluation result is a property of a procedure, not of a dataset: stride-$1$
 windowing with a random validation split places near-duplicates across the split whenever
-windows overlap, which is common in sensor-based HAR.
+windows overlap, which is common in sensor-based HAR. That overlapping windows bias
+cross-validation in activity recognition is established \cite{hammerla2015}; what we add
+is the magnitude on this pipeline, $46$ points of source \macf{}, and the separation of
+the split from the window definition, which contributes under two.
 
-The inversion is different in kind. We observe it five times across four design decisions
-and in both transfer directions, which rules out a one-off, but all five observations come
-from the same two apartments. We therefore state it as an empirical regularity of this
-data rather than as a general law: \emph{in this dataset, across every design choice we
-varied, the configuration selected by in-domain validation was the one that transferred
-worst.} If it holds more widely it inverts standard model-selection practice for
-cross-building deployment, and we think the mechanism, that each of these choices
-increases access to building-specific regularity, is general enough to be worth
-testing elsewhere. Establishing that requires datasets with more than two environments.
+The asymmetry of the cross-building penalty is different in kind. It is measured here on
+two apartments, so the specific values of $0.6$ and $21.3$ points belong to this pair and
+nothing follows about their magnitude elsewhere. What we would expect to generalise is the
+procedure and its consequence: a cross-building penalty should be measured against a model
+trained on the target building at matched sample size, not against source validation, and
+until it is measured that way an adaptation gain cannot be separated from the headroom it
+was handed. Establishing how often the penalty is negligible requires datasets with more
+than two environments.
 
 \paragraph{Limitations.} The study rests on one HAR dataset and two apartments from it.
 Running both transfer directions rules out a direction-specific fluke but says nothing
@@ -1411,26 +1538,27 @@ removes the effect, and the window definition is nearly irrelevant to it. Making
 causal, which the online premise of TTA requires, improves target transfer by $7.3$ points
 rather than costing anything.
 
-Across every design choice we varied (feature set, window length, temporal context)
-and in both transfer directions, the configuration that validated best in-domain
-transferred worst. Five observations on two apartments do not establish a general law, but
-they do establish that in-domain validation cannot be assumed safe for cross-building
-model selection. Under the grouped protocol the cross-building gap is $9$ to $15$ points depending on
-direction, and most of it is attributable to features that encode sensor identity. Those
-features score below stratified-random guessing on the target in both directions. The
-feature set that validates best in-domain transfers worst, also in both directions.
+Measured against a model trained on the target building at matched sample size, the
+cross-building penalty is $0.6$ points entering one apartment and $21.3$ entering the
+other. One of our two directions therefore contains essentially no domain shift, and what
+the conventional source-minus-target figure counts as an $8.8$-point gap there is mostly
+the difference between the two apartments as prediction problems. Most of the apparent gap
+that does exist is attributable to features encoding sensor identity, which score below
+stratified-random guessing on the target in both directions.
 
-Of the three methods, only DIGA improves on this baseline, by $1.7$ \macf{} points
-with a bootstrap interval excluding zero, and only with hyperparameters retuned on target
-labels. PETAL and PeTTA do not adapt at all, for reasons traceable to specific equations:
-PETAL's coefficient scales the likelihood, so the value selected by target-label tuning
-removes the learning signal; PeTTA's divergence signal sums over the embedding dimension
-and saturates when the domains are buildings. Both failures reproduce on occupancy
-estimation, in both of its transfer directions. Occupancy also isolates what an adaptation
-gain measures: the two directions differ only in the quality of the source checkpoint, and
-against a sound one no method improves, while against one that is worse than chance the
-same methods gain $27$ to $41$ MCC points. A further apparent gain proves attributable to
-a target-fitted normalisation worth $3.8$ MCC points to every method, the unadapted one
+The methods follow that asymmetry. Across DIGA's full published grid, $53$ of $64$
+settings lose ground in the direction with no headroom and all $64$ gain in the direction
+with $21$ points of it; its best reported figure, $1.7$ \macf{} points, requires
+hyperparameters retuned on target labels, and a label-free criterion recovers $0.3$.
+PETAL and PeTTA do not move at all, for reasons traceable to their own specifications.
+PETAL's published learning rate and teacher update rate assume streams of thousands of
+batches, and ours is $54$; forcing it to move by raising either makes it monotonically
+worse. PeTTA's divergence signal sums over the embedding dimension and saturates when the
+domains are buildings. Both reproduce on occupancy estimation, in both of its transfer
+directions, where the two directions differ only in the quality of the source checkpoint:
+against a sound one no method improves, while against one worse than chance the same
+methods gain $27$ to $41$ MCC points. A further apparent gain proves attributable to a
+target-fitted normalisation worth $3.8$ MCC points to every method, the unadapted one
 included.
 
 We do not conclude that test-time adaptation is unsuitable for smart buildings. We conclude
@@ -1438,7 +1566,7 @@ that it was being asked to repair a problem largely created by evaluation and fe
 design, and that fixing those leaves little for adaptation to contribute. Future work
 should look at making building-specific information transferable instead of discarding
 it, aligning sensors across sites by functional role using unlabelled co-activation
-structure, since the $9$ points separating our layout-invariant features from the
+structure, since the points separating our layout-invariant features from the
 best in-domain configuration are exactly the information currently being thrown away.
 
 % ============================================================================
@@ -1493,6 +1621,11 @@ four classes that do work.
 
 % ============================================================================
 \begin{thebibliography}{99}
+
+\bibitem{hammerla2015} N. Y. Hammerla, T. Pl\"otz, Let's (not) stick together: pairwise
+similarity biases cross-validation in activity recognition, in: Proceedings of the 2015
+ACM International Joint Conference on Pervasive and Ubiquitous Computing, 2015,
+pp. 1041--1051.
 
 \bibitem{manfren2021} M. Manfren, M. Sibilla, L. Tronchin, Energy modelling and analytics
 in the built environment---a review of their role for energy transitions in the
