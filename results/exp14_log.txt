@@ -1,0 +1,16 @@
+================================================================================================
+EXPERIMENT 14 — unsupervised sensor correspondence
+  53 shared sensors   signature dim 40
+  learned assignment leaves 0/53 sensors at their own index
+  mean matched cost 0.5041 vs mean off-diagonal 0.9924
+  TARGET chance: stratified macroF1=0.1997
+================================================================================================
+  variant                              src-val TGT macroF1      sd       MCC      acc
+  ---------------------------------------------------------------------------------
+  identity (no matching)                0.3220      0.1386   0.015    0.0324   0.3390
+  learned correspondence                0.3220      0.2227   0.033    0.0567   0.2895
+  random permutation (null)             0.3220      0.1843   0.014    0.0494   0.2533
+  oracle permutation (bound)            0.3220      0.4827   0.034    0.4384   0.5993
+
+  reference: layout-invariant 13-d reaches 0.4466 target macro-F1
+-> results/exp14_correspondence.csv

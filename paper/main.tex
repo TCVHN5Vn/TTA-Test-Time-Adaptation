@@ -465,9 +465,9 @@ entropy on the target stream.
 
 \subsection{Datasets}
 
-\paragraph{HAR.} The WSU smart-home dataset \cite{cook2012} provides two single-occupant
-apartments, S1 and S2, instrumented with binary proximity sensors, recorded over $16$ days
-each. S1 exposes $70$ sensor columns and S2 exposes $75$; feature engineering uses the
+\paragraph{HAR.} The dataset of \citet{tapia2004} provides two single-occupant
+apartments, S1 and S2, instrumented with binary proximity sensors on household objects and
+recorded over roughly two weeks each ($16$ recording days here). S1 exposes $70$ sensor columns and S2 exposes $75$; feature engineering uses the
 $53$ shared by both. Table~\ref{tab:har-data} gives per-class counts. We evaluate both
 transfer directions.
 
@@ -958,7 +958,8 @@ criterion should be reported alongside any oracle-tuned number.
 \paragraph{Limitations.} The study rests on one HAR dataset and two apartments from it.
 Running both transfer directions rules out a direction-specific fluke but says nothing
 about other buildings, other sensor modalities, or richer activity sets; external validity
-beyond WSU is untested. The occupancy data is private, so that section is not independently
+beyond these two apartments is untested, and the dataset contains no further homes. The
+occupancy data is private, so that section is not independently
 reproducible from the released code. Our best configuration improves on the simpler one by
 $3.3$ \macf{} points against a between-fold standard deviation of $0.067$, and we present
 it as a modest gain rather than a result. And the \texttt{cleaning} class, with $113$ target
@@ -1003,7 +1004,7 @@ best in-domain configuration are exactly the information currently being thrown 
 % ============================================================================
 \section*{Reproducibility}
 
-Code, the raw WSU sensor data and every result file are available at
+Code, the raw sensor data and every result file are available at
 \url{https://github.com/TCVHN5Vn/TTA-Test-Time-Adaptation}. The repository reproduces the
 full analysis from the raw CSVs in one pass, each table above names the script and result
 file that generated it. The occupancy dataset is private --- it
@@ -1119,8 +1120,9 @@ buildings.
 test-time adaptation for cross-person activity recognition, Proceedings of the ACM on
 Interactive, Mobile, Wearable and Ubiquitous Technologies 7 (4) (2023).
 
-\bibitem{cook2012} D. J. Cook, Learning setting-generalized activity models for smart
-spaces, IEEE Intelligent Systems 27 (1) (2012) 32--38.
+\bibitem{tapia2004} E. M. Tapia, S. S. Intille, K. Larson, Activity recognition in the
+home using simple and ubiquitous sensors, in: Pervasive Computing, Springer, Berlin,
+Heidelberg, 2004, pp. 158--175.
 
 \bibitem{chicco2020} D. Chicco, G. Jurman, The advantages of the Matthews correlation
 coefficient (MCC) over F1 score and accuracy in binary classification evaluation, BMC
