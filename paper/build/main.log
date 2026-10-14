@@ -995,17 +995,22 @@ LaTeX Font Info:    Trying to load font information for TS1+stix on input line
  (ts1stix.fd
 File: ts1stix.fd 2015/04/17 v1.1.2-latex STIX TS1 font definitions
 )
-Underfull \hbox (badness 1173) in paragraph at lines 194--198
+Overfull \hbox (0.96552pt too wide) in paragraph at lines 179--184
+[]\T1/stix/b/n/10 Adaptation gain mea-sures source-model de-fi-ciency,
+ []
+
+
+Underfull \hbox (badness 1173) in paragraph at lines 185--189
 []\T1/stix/b/n/10 Three mech-a-nisms by which image-domain as-
  []
 
 
-Underfull \hbox (badness 1681) in paragraph at lines 194--198
+Underfull \hbox (badness 1681) in paragraph at lines 185--189
 \T1/stix/m/n/10 PeTTA's di-ver-gence sig-nal sat-u-rates, and DIGA's
  []
 
 
-Underfull \hbox (badness 1442) in paragraph at lines 194--198
+Underfull \hbox (badness 1442) in paragraph at lines 185--189
 \T1/stix/m/n/10 ad-ver-tised global hy-per-pa-ram-e-ters do not trans-fer
  []
 
@@ -1059,24 +1064,14 @@ LS1/stix/m/it/10 ; \LS1/stixscr/m/n/10 ^^L\LS2/stixex/m/n/10 ë$ \T1/stix/m/n/10
  must de-note a dis-sim-i-lar-ity. More
  []
 
-[11]
-Underfull \hbox (badness 1584) in paragraph at lines 1199--1205
-\T1/stix/m/n/10 whole con-fig-u-ra-tion spaces in-stead of at sin-gle points:
- []
-
-
-Underfull \hbox (badness 1077) in paragraph at lines 1199--1205
-\T1/stix/m/n/10 normalisation-statistic adap-ta-tion is not a prop-erty of a
- []
-
-[12] [13] [14]
-Underfull \hbox (badness 1072) in paragraph at lines 1361--1363
+[11] [12] [13] [14]
+Underfull \hbox (badness 1072) in paragraph at lines 1363--1365
  []\T1/stix/m/it/11 What gen-er-alises, and what does not.[] \T1/stix/m/n/10 Th
 e find-ings
  []
 
 
-Overfull \hbox (13.96715pt too wide) in paragraph at lines 1445--1453
+Overfull \hbox (13.96715pt too wide) in paragraph at lines 1447--1455
 \T1/stix/m/n/10 able at [][]$\T1/zi4/m/n/10 https : / / github . com / TCVHN5Vn
  / TTA-[]Test-[]Time-[]Adaptation$[][]\T1/stix/m/n/10 .
  []
@@ -1085,4 +1080,4 @@ Overfull \hbox (13.96715pt too wide) in paragraph at lines 1445--1453
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  )
-Output written on main.xdv (16 pages, 209256 bytes).
+Output written on main.xdv (16 pages, 209936 bytes).

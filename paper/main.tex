@@ -63,42 +63,42 @@ Adaptation for Cross-Building Human Activity Recognition}
 \begin{abstract}
 Test-time adaptation (TTA) is an appealing answer to cross-building deployment in smart
 buildings: sensors run continuously, and labelled data from a new site never arrives. We
-set out to evaluate three TTA methods developed for images (DIGA, PETAL and PeTTA)
-on human activity recognition and occupancy estimation across buildings, and found first
-that the evaluation protocol itself was the dominant effect. Sliding windows with unit
-stride cause adjacent samples to share nineteen of twenty timesteps, so a random
+evaluate three TTA methods developed for images (DIGA, PETAL and PeTTA) on human activity
+recognition and occupancy estimation across buildings, and find that how much they help is
+governed by the quality of the model they start from and not by the method. Occupancy
+estimation supplies the cleanest test, because the two transfer directions differ only in
+the quality of the source checkpoint: against a sound one no method improves and the
+normalisation-based ones lose ground, while against a checkpoint worse than chance the
+same methods gain $27$ to $41$ MCC points. Adaptation gain here measures source-model
+deficiency, not adaptation quality.
+
+Reaching that comparison required measuring the cross-building gap itself. Sliding windows
+with unit stride cause adjacent samples to share nineteen of twenty timesteps, so a random
 train/validation split places a near-duplicate of almost every validation sample into
-training. Under that split a source model reaches $0.998$ \macf; grouped by recording day
-it reaches $0.53$. The window definition makes almost no difference to this: the inflation
-comes from the split.
+training; under that split a source model reaches $0.998$ \macf, and grouped by recording
+day it reaches $0.53$. The window definition makes almost no difference to this: the
+inflation comes from the split. Features matter as much. The $106$ per-sensor features
+that dominate the usual design score \emph{below} stratified-random guessing on the target
+in both directions, because a given sensor index is a different physical device in each
+building. With causal windows that an online system can compute, and thirteen
+window-level summary statistics that name no sensor, source and target \macf{} are $0.534$
+and $0.447$ in one transfer direction and $0.454$ and $0.307$ in the reverse, a gap of $9$
+to $15$ points instead of $83$. One pattern recurs across every design choice we varied
+(which features, how long the window, how much temporal context) and in both transfer
+directions: the configuration that validates best in-domain transfers worst. On this data,
+selecting a model by in-domain accuracy selects the worst one to deploy elsewhere; whether
+that holds beyond these two apartments is untested.
 
-Measured consistently, the cross-building drop is far smaller than reported. With causal
-windows that an online system can compute, and features that do not encode sensor
-identity, source and target \macf{} are $0.534$ and $0.447$ in one transfer direction and
-$0.454$ and $0.307$ in the reverse, a gap of $9$ to $15$ points instead of $83$. The
-features responsible are thirteen window-level summary statistics. The $106$ per-sensor
-features that dominate the usual design score \emph{below} stratified-random guessing on
-the target in both directions, because a given sensor index is a different physical device
-in each building. One pattern recurs across every design choice we varied (which features, how long
-the window, how much temporal context) and in both transfer directions: the
-configuration that validates best in-domain transfers worst. On this data, selecting a
-model by in-domain accuracy selects the worst one to deploy elsewhere; whether that holds
-beyond these two apartments is untested.
-
-Against that baseline the three methods behave differently, and each failure
-traces to a specific published equation, not to our port. PETAL's coefficient
-weights the likelihood, so the value selected by tuning on target labels removes the
-learning signal entirely. PeTTA gates its update rate on a Mahalanobis distance summed
-over $64$ embedding dimensions; across buildings that sum is large enough that the gate
-saturates and the teacher stops updating. DIGA does help, by $1.7$ \macf{} points with a
-bootstrap interval excluding zero, but only with hyperparameters retuned on target labels.
-Occupancy estimation then supplies the clearest test, because the two transfer
-directions differ only in the quality of the source checkpoint. Against a sound one no
-method improves and the normalisation-based ones lose ground; against a checkpoint that is
-worse than chance the same methods gain $27$ to $41$ MCC points. Adaptation gain here
-measures source-model deficiency, not adaptation quality. Our conclusion is not that TTA fails in smart
-buildings, but that it was being asked to repair a problem largely created by evaluation
-and feature design.
+Against that baseline the three methods behave differently, and each result traces to a
+specific published equation, not to our port. PETAL's coefficient weights the likelihood,
+so the value selected by tuning on target labels removes the learning signal entirely.
+PeTTA gates its update rate on a Mahalanobis distance summed over $64$ embedding
+dimensions; across buildings that sum is large enough that the gate saturates and the
+teacher stops updating. DIGA does help, by $1.7$ \macf{} points with a bootstrap interval
+excluding zero, but only with hyperparameters retuned on target labels, and across its
+full published grid the sign of the effect follows the source checkpoint rather than the
+setting. Our conclusion is not that TTA fails in smart buildings, but that it was being
+asked to repair a problem largely created by evaluation and feature design.
 \end{abstract}
 
 \begin{keywords}
@@ -171,6 +171,22 @@ our implementation.
 Our contributions are as follows.
 
 \begin{itemize}
+\item \textbf{In-domain fit anti-correlates with cross-building transfer}, shown across
+  feature sets, window length and temporal context, in both transfer directions
+  (Sections~\ref{sec:res-feat} and~\ref{sec:res-ceiling}). Per-sensor features, which
+  drive most of the effect, score below stratified-random on the target either way.
+
+\item \textbf{Adaptation gain measures source-model deficiency, not adaptation quality.} On cross-office
+  occupancy estimation the two transfer directions differ only in the quality of the
+  source checkpoint: against a sound one no method improves, against one worse than
+  chance the same methods gain $27$ to $41$ MCC points. PETAL and PeTTA reproduce source
+  predictions in both (Section~\ref{sec:res-oe}).
+
+\item \textbf{Three mechanisms by which image-domain assumptions break on sensor data},
+  each tied to a published equation: PETAL's $\bar\lambda$ scales the likelihood, PeTTA's
+  divergence signal saturates, and DIGA's advertised global hyperparameters do not
+  transfer (Section~\ref{sec:res-mech}).
+
 \item \textbf{A protocol error that accounts for most of the reported cross-building gap.}
   We isolate it by varying the window definition and the validation split independently.
   Causality and segmentation move source \macf{} by less than two points; the split moves
@@ -181,26 +197,10 @@ Our contributions are as follows.
   TTA. Replacing them with causal windows improves target \macf{} by $7.3$ points. There
   is no trade-off to manage (Section~\ref{sec:res-leak}).
 
-\item \textbf{In-domain fit anti-correlates with cross-building transfer}, shown across
-  feature sets, window length and temporal context, in both transfer directions
-  (Sections~\ref{sec:res-feat} and~\ref{sec:res-ceiling}). Per-sensor features, which
-  drive most of the effect, score below stratified-random on the target either way.
-
 \item \textbf{A located ceiling.} Seven attempts to raise target performance beyond the
   deployable checkpoint are reported, six of which fail, including an unsupervised
   sensor-correspondence method given the advantage of offline access to the target
   stream (Sections~\ref{sec:res-ceiling} and~\ref{sec:res-corr}).
-
-\item \textbf{Three mechanisms by which image-domain assumptions break on sensor data},
-  each tied to a published equation: PETAL's $\bar\lambda$ scales the likelihood, PeTTA's
-  divergence signal saturates, and DIGA's advertised global hyperparameters do not
-  transfer (Section~\ref{sec:res-mech}).
-
-\item \textbf{A second task isolating what adaptation gain measures.} On cross-office
-  occupancy estimation the two transfer directions differ only in the quality of the
-  source checkpoint: against a sound one no method improves, against one worse than
-  chance the same methods gain $27$ to $41$ MCC points. PETAL and PeTTA reproduce source
-  predictions in both (Section~\ref{sec:res-oe}).
 \end{itemize}
 
 Section~\ref{sec:related} reviews domain adaptation and TTA for sensor data.
@@ -1197,8 +1197,10 @@ activity $\text{S}_2$  & \macf{} $0.3226$ & $64/64$ \\
 \end{center}
 
 The fraction of a published grid that helps is monotone in how good the model being adapted
-already is. This is the central observation of the paper, obtained here over whole
-configuration spaces instead of at single points: normalisation-statistic adaptation is
+already is. This is the inversion of Section~\ref{sec:res-feat} seen from the adaptation
+side, and over whole configuration spaces instead of at single points: a model that fits
+its source domain well holds more source-specific structure, which is why it transfers
+worse and why replacing its statistics helps less. Normalisation-statistic adaptation is
 not a property of a method that one tunes into working, it is a trade of source-fitted
 statistics for target-fitted ones, and whether that trade pays depends on which of the two
 is better.
