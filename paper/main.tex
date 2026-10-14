@@ -63,7 +63,7 @@ Adaptation for Cross-Building Human Activity Recognition}
 \begin{abstract}
 Test-time adaptation (TTA) is an appealing answer to cross-building deployment in smart
 buildings: sensors run continuously, and labelled data from a new site never arrives. We
-set out to evaluate three TTA methods developed for images --- DIGA, PETAL and PeTTA ---
+set out to evaluate three TTA methods developed for images (DIGA, PETAL and PeTTA)
 on human activity recognition and occupancy estimation across buildings, and found first
 that the evaluation protocol itself was the dominant effect. Sliding windows with unit
 stride cause adjacent samples to share nineteen of twenty timesteps, so a random
@@ -75,18 +75,18 @@ comes from the split.
 Measured consistently, the cross-building drop is far smaller than reported. With causal
 windows that an online system can compute, and features that do not encode sensor
 identity, source and target \macf{} are $0.534$ and $0.447$ in one transfer direction and
-$0.454$ and $0.307$ in the reverse --- a gap of $9$ to $15$ points rather than $83$. The
+$0.454$ and $0.307$ in the reverse, a gap of $9$ to $15$ points instead of $83$. The
 features responsible are thirteen window-level summary statistics. The $106$ per-sensor
 features that dominate the usual design score \emph{below} stratified-random guessing on
 the target in both directions, because a given sensor index is a different physical device
-in each building. One pattern recurs across every design choice we varied --- which features, how long
-the window, how much temporal context --- and in both transfer directions: the
+in each building. One pattern recurs across every design choice we varied (which features, how long
+the window, how much temporal context) and in both transfer directions: the
 configuration that validates best in-domain transfers worst. On this data, selecting a
 model by in-domain accuracy selects the worst one to deploy elsewhere; whether that holds
 beyond these two apartments is untested.
 
 Against that baseline the three methods behave differently, and each failure
-traces to a specific published equation rather than to our port. PETAL's coefficient
+traces to a specific published equation, not to our port. PETAL's coefficient
 weights the likelihood, so the value selected by tuning on target labels removes the
 learning signal entirely. PeTTA gates its update rate on a Mahalanobis distance summed
 over $64$ embedding dimensions; across buildings that sum is large enough that the gate
@@ -102,8 +102,8 @@ and feature design.
 \end{abstract}
 
 \begin{keywords}
-Test-time adaptation \sep Human activity recognition \sep Occupancy estimation \sep
-Smart buildings \sep Evaluation leakage \sep Domain adaptation
+Test-time adaptation \sep Human activity recognition \sep Occupancy estimation
+\sep Smart buildings \sep Evaluation leakage
 \end{keywords}
 
 \maketitle
@@ -140,7 +140,7 @@ windows with unit stride, so consecutive samples share $19$ of their $20$ timest
 random train/validation split places a $95\%$-identical copy of nearly every validation
 sample into training. We isolate the effect by varying the window definition and the split
 independently: the window moves source validation by under two points, the split moves it
-by forty-six. Grouping by recording day --- a one-line change --- gives $0.53$ and leaves
+by forty-six. Grouping by recording day, a one-line change, gives $0.53$ and leaves
 the target number essentially untouched. The gap that motivates this literature is
 therefore substantially smaller than reported, and the remainder of this paper measures
 both domains under the same protocol.
@@ -160,7 +160,7 @@ validate better and transfer worse; added temporal context does the same; and in
 reverse direction the conventional feature vector attains the best source-validation
 score of any configuration we tried and the worst target score, below chance. The
 practical consequence is immediate and uncomfortable. Choosing a checkpoint by in-domain
-validation --- the ordinary thing to do --- systematically picks the model that will
+validation, the ordinary thing to do, systematically picks the model that will
 perform worst in the next building.
 
 What remains for adaptation to do is correspondingly small, and the three methods divide
@@ -230,7 +230,7 @@ TTA adapts a pre-trained model during inference using only unlabelled target sam
 \cite{liang2024}. It is stricter than source-free domain adaptation \cite{shot}, which
 permits repeated offline passes over the target set: TTA runs online, in a single pass, on
 samples as they arrive. TENT \cite{tent} minimises prediction entropy over batch
-normalisation parameters and assumes a stationary, i.i.d.\ test stream --- both of which
+normalisation parameters and assumes a stationary, i.i.d.\ test stream, both of which
 fail for building sensors, where distributions drift across the day and consecutive
 readings are correlated. Under class imbalance, entropy minimisation tends to reinforce
 the majority class, since confident low-entropy outputs are easiest to produce for
@@ -282,7 +282,7 @@ where $\theta_0$ are the source parameters and $\mathcal{R}$ penalises drift.
 Two constraints on Eq.~\ref{eq:tta} are usually left implicit and matter a great deal
 here. First, $f_{\theta_t}(\mathbf{x}_t)$ must be computable from information available at
 time $t$; a feature that reads future samples cannot be deployed. Second, any quantity
-used to define $\mathcal{X}$ --- scalers, pruning masks, prototypes --- must be estimable
+used to define $\mathcal{X}$ (scalers, pruning masks, prototypes) must be estimable
 without target labels, and ideally without target data. Section~\ref{sec:method} enforces
 both.
 
@@ -403,7 +403,7 @@ Section~\ref{sec:res-leak}.
 but hands the extractor the label transitions it is meant to predict. We segment instead
 on \emph{recording continuity}: a new segment begins at a day change or a gap in the
 $30$\,s sampling. This uses no labels and is what a deployed system can determine. Windows
-are truncated at segment starts rather than dropped, which is what an online system
+are truncated at segment starts instead of dropped, which is what an online system
 genuinely has after a gap.
 
 \subsection{Validation protocol}
@@ -411,7 +411,7 @@ genuinely has after a gap.
 
 Because stride is one, adjacent samples share $W-1$ of $W$ timesteps. A random
 train/validation split therefore places a near-duplicate of nearly every validation sample
-into training, and the resulting score measures memorisation rather than generalisation.
+into training, and the resulting score measures memorisation, not generalisation.
 We use \textbf{GroupKFold over \texttt{year\_day}}: no recording day appears in both
 halves, which removes window overlap and same-day correlation together. All source model
 selection in this paper uses this protocol. Section~\ref{sec:res-leak} reports what each
@@ -519,7 +519,7 @@ Section~\ref{sec:res-mech} does the same for DIGA on occupancy.
 
 \subsection{Datasets}
 
-\paragraph{HAR.} The dataset of \citet{tapia2004} provides two single-occupant
+\paragraph{HAR.} The dataset of Tapia et al.~\cite{tapia2004} provides two single-occupant
 apartments, S1 and S2, instrumented with binary proximity sensors on household objects and
 recorded over roughly two weeks each ($16$ recording days here). S1 exposes $70$ sensor columns and S2 exposes $75$; feature engineering uses the
 $53$ shared by both. Table~\ref{tab:har-data} gives per-class counts. We evaluate both
@@ -735,11 +735,11 @@ source-validation score of any row ($0.5381$) and the worst transfer ($0.1583$),
 $4.2$ points below chance.
 
 The gap is direction-dependent: $8.8$ points forward and $14.7$ reverse. The asymmetry has
-a visible cause rather than being noise. S2 is the weaker source --- $3412$ samples
+a visible cause rather than being noise. S2 is the weaker source: $3412$ samples
 against $5031$, with the hard classes much thinner ($113$ versus $442$ for
 \texttt{cleaning}) --- and training on the smaller, more imbalanced apartment lowers both
 sides of the comparison. We therefore state the result as a gap of $9$ to $15$ points
-rather than quoting the more favourable direction.
+instead of quoting the more favourable direction.
 
 \subsection{Test-time adaptation on the deployable checkpoint}
 \label{sec:res-tta}
@@ -800,7 +800,7 @@ contingent on how two under-specified steps of the method are implemented, which
 Section~\ref{sec:res-digaimpl} quantifies. For comparison, the feature redesign is
 worth $+17.0$ \macf{} points before any adaptation runs. PETAL and PeTTA are statistically
 indistinguishable from the unadapted model. AdaBN and TENT are substantially
-\emph{worse} --- around $17$ points of \macf{} --- which is itself informative: adapting
+\emph{worse}, by around $17$ points of \macf{}, which is itself informative: adapting
 normalisation statistics helps when the source model is poor and hurts once the features
 are already distribution-robust.
 
@@ -869,7 +869,7 @@ Two things are worth drawing out of Table~\ref{tab:ceiling}.
 First, the only attempt that helps in \emph{both} transfer directions is the transition
 model, and it helps by less than a point ($0.4466\to0.4503$ forward, $0.3068\to0.3160$
 reverse). Its transition matrix is estimated on the source apartment and encodes nothing
-about sensors --- only how often one activity follows another. That it transfers at all,
+about sensors, only how often one activity follows another. That it transfers at all,
 while every attempt to extract more from the sensor stream does not, is consistent with
 the rest of this paper: what crosses buildings is behavioural regularity, not layout.
 
@@ -884,9 +884,9 @@ Section~\ref{sec:discussion} returns to it.
 
 If per-sensor features fail only because index $100$ denotes a different device in each
 apartment, the obvious repair is to estimate the correspondence. We tested this. Each
-sensor was described by a behavioural signature computed from unlabelled data --- firing
+sensor was described by a behavioural signature computed from unlabelled data: firing
 rate, burst-length statistics, a $24$-bin diurnal profile, and an index-free summary of
-its co-activation neighbourhood --- and the two sensor sets were matched by balanced
+its co-activation neighbourhood. The two sensor sets were then matched by balanced
 assignment on signature distance.
 
 To separate a real correspondence from overfitting, permutations were estimated on one
@@ -934,16 +934,16 @@ their failure on one-dimensional data is to be expected. The results do not supp
 reading, for three reasons.
 
 First, the picture is not uniform. DIGA improves on the deployable checkpoint with a
-bootstrap interval excluding zero, and AdaBN --- the simplest normalisation-based
-adaptation there is --- gains $41.5$ MCC points in one occupancy direction
+bootstrap interval excluding zero, and AdaBN, the simplest normalisation-based
+adaptation there is, gains $41.5$ MCC points in one occupancy direction
 (Table~\ref{tab:oe-rev}). Methods built for images are evidently capable of helping on
-sensor data; whether they do turns out to depend on the source checkpoint rather than on
+sensor data; whether they do turns out to depend on the source checkpoint and not on
 the modality.
 
 Second, PETAL's failure has nothing to do with modality. Setting $\bar\lambda=0$ deletes
 the likelihood term from Eq.~\ref{eq:petal} on any data, images included. What the move to
 sensor data changes is only which value a target-label search selects, and even that
-follows a statable condition rather than the modality.
+follows a statable condition, not the modality.
 
 Third, PeTTA's failure is modality-related but not in the way the objection supposes. The
 method does not degrade gracefully; it stops entirely and silently, with losses that look
@@ -969,7 +969,7 @@ on the deployable checkpoint with a non-degenerate SWAG posterior.
 \centering
 \caption{PETAL as a function of $\bar\lambda$ (published parameterisation,
 Eq.~\ref{eq:petal}). Source-only is \macf{} $0.4641$, MCC $0.4679$. At $\bar\lambda=0$
-the weights still move --- toward the SWAG mean --- but the movement is independent of
+the weights still move, toward the SWAG mean, but the movement is independent of
 the target stream.}
 \label{tab:lambda}
 \small
@@ -986,8 +986,7 @@ $10.0$ & $0.1688$ & $22/3412$ & $0.4637$ & $0.4677$ \\
 \end{table*}
 
 The consequence is specific. On a source model that already outperforms what self-training
-produces, selecting $\bar\lambda$ by target-domain \macf{} --- a criterion in common use
---- prefers $\bar\lambda=0$, the setting at which adaptation cannot occur. A reported null
+produces, selecting $\bar\lambda$ by target-domain \macf{}, a criterion in common use, prefers $\bar\lambda=0$, the setting at which adaptation cannot occur. A reported null
 for PETAL obtained this way is a statement about the search procedure, not about the
 method.
 
@@ -998,8 +997,8 @@ averaged over the three seeds: the median costs $1.0$ point and the least damagi
 $0.7$. Across individual runs, $83\%$ are negative and the single best run gains
 $0.9$ points, so a search reporting its own maximum over a grid and a seed can return a
 positive number drawn from a distribution with no positive mean. Selection on target
-labels returns exactly that maximum. A label-free rule --- lowest mean prediction entropy
-on the target stream --- selects the configuration costing $0.7$ points, which is what a
+labels returns exactly that maximum. A label-free rule, lowest mean prediction entropy
+on the target stream, selects the configuration costing $0.7$ points, which is what a
 deployment would actually obtain. Section~\ref{sec:res-hgrid} repeats the exercise on the
 activity task and for all three methods.
 
@@ -1041,7 +1040,7 @@ Normalising per dimension unfreezes the mechanism, and it still does not improve
 source model. An $\alpha$ floor alone does not help, because $\lambda_t=\bar\gamma\lambda_0$
 is simultaneously pinned at maximum pull-back. We emphasise that saturation is a failure
 mode PeTTA's authors themselves document for ablated variants; what is new here is that it
-occurs for the full method when the domain gap is a change of building rather than an
+occurs for the full method when the domain gap is a change of building instead of an
 image corruption.
 
 \paragraph{DIGA: published hyperparameters do not transfer.} Table~\ref{tab:diga} crosses
@@ -1083,8 +1082,8 @@ Two steps of DIGA are specified in a way that admits more than one implementatio
 difference is not cosmetic.
 
 The first is the DAM. Eq.~\ref{eq:dam} blends batch-normalisation \emph{statistics}, after
-which the input is normalised once. An alternative is to normalise twice --- with source
-statistics and with batch statistics --- and blend the two normalised \emph{outputs}. These
+which the input is normalised once. An alternative is to normalise twice, once with source
+statistics and once with batch statistics, and blend the two normalised \emph{outputs}. These
 are different operations, and a reference implementation in circulation takes the second
 route while citing the first equation.
 
@@ -1134,7 +1133,7 @@ $\lambda_{BN}\times\mathcal{P}_0\times\rho_P\times K$ ($64$ settings), PETAL ove
 $\bar\lambda\times\pi\times\delta$ ($24$), and PeTTA over $\alpha_0\times\lambda_0$ and
 learning rate ($16$). Each setting is run in both transfer directions with three seeds
 under the protocol of Table~\ref{tab:tta}, and is scored two ways: by the best target
-\macf{} in the grid, which needs target labels and is therefore an upper bound rather than
+\macf{} in the grid, which needs target labels and is therefore an upper bound and not
 a result, and by the configuration with the lowest mean prediction entropy on the target
 stream, which needs none and is what a deployment can reach.
 
@@ -1172,11 +1171,11 @@ For PETAL and PeTTA the grids are flat at zero. No setting in PETAL's published 
 moves more than $36$ of $3412$ predictions, and none in PeTTA's moves more than $38$; the
 largest target gain anywhere in either grid is $0.3$ points, below the seed spread of the
 source model itself. The analysis in Section~\ref{sec:res-mech} attributes this to the
-update rules rather than to tuning, and the grids are consistent with that: a method whose
+update rules and not to tuning, and the grids are consistent with that: a method whose
 data term is switched off by $\bar\lambda=0$, or whose adaptation rate is driven to
 $\alpha_t\approx0$ by a saturated gate, does not become active at a different $\pi$ or
 $\lambda_0$. Notably, the oracle rule selects $\bar\lambda=0$ for PETAL in the
-$\text{S}_1\!\to\!\text{S}_2$ direction --- the one value at which, by
+$\text{S}_1\!\to\!\text{S}_2$ direction: the one value at which, by
 Eq.~\ref{eq:petal}, the target stream enters no gradient.
 
 For DIGA the grid is wide, and which way it points is decided by the source model rather
@@ -1199,7 +1198,7 @@ activity $\text{S}_2$  & \macf{} $0.3226$ & $64/64$ \\
 
 The fraction of a published grid that helps is monotone in how good the model being adapted
 already is. This is the central observation of the paper, obtained here over whole
-configuration spaces rather than at single points: normalisation-statistic adaptation is
+configuration spaces instead of at single points: normalisation-statistic adaptation is
 not a property of a method that one tunes into working, it is a trade of source-fitted
 statistics for target-fitted ones, and whether that trade pays depends on which of the two
 is better.
@@ -1209,7 +1208,7 @@ how such results should be read. Label-free selection recovers $28\%$ of DIGA's 
 in the forward direction and $56\%$ in the reverse; for PETAL and PeTTA it returns a
 negative number in the reverse direction where the oracle returns a positive one. An
 entropy criterion prefers confident predictions, and a method can raise confidence while
-lowering accuracy, so the gap is expected rather than anomalous. Its size is the point: the
+lowering accuracy, so the gap is expected, not anomalous. Its size is the point: the
 headroom a grid search reports is between a quarter and a half larger than what a system
 without target labels can select, which is the condition TTA is defined under.
 
@@ -1248,8 +1247,8 @@ PETAL and PeTTA reproduce
 source-only predictions to four decimal places on this task as well, which rules out a
 HAR-specific explanation for the two freezes reported in Section~\ref{sec:res-mech}.
 
-Running the transfer in the reverse direction --- training on the target office and
-evaluating on the source office --- changes the picture completely, and in a way that is
+Running the transfer in the reverse direction, training on the target office and
+evaluating on the source office, changes the picture completely, and in a way that is
 the most direct evidence in this paper for its central claim.
 
 % source: results/exp17_occ_reverse.csv (src/exp17_occ_reverse.py), 5 seeds
@@ -1285,7 +1284,7 @@ good. When it is, adaptation has nothing to contribute and the normalisation-bas
 actively harm it; when it is broken, the same methods recover a large part of the deficit.
 This mirrors AdaBN's behaviour on HAR, where it costs $17$ \macf{} points against a sound
 checkpoint, and it supports reading adaptation gain as a measure of source-model
-deficiency rather than of adaptation quality. A method evaluated only against a weak
+deficiency and not of adaptation quality. A method evaluated only against a weak
 source model will appear to work.
 
 PETAL and PeTTA reproduce the source predictions exactly in this direction too. Across two
@@ -1296,9 +1295,9 @@ tasks and two directions each, neither method has changed a prediction.
 \label{sec:discussion}
 
 The headline result of this study is not about any one method. It is that the quantity
-these methods are asked to repair --- the cross-building performance drop --- is routinely
+these methods are asked to repair, the cross-building performance drop, is routinely
 measured in a way that substantially overstates it, and that most of what remains once it is
-measured consistently is attributable to feature design rather than to anything TTA can
+measured consistently is attributable to feature design and not to anything TTA can
 reach.
 
 Measured consistently on both sides, the gap is $9$ to $15$ points of \macf{} depending on
@@ -1306,8 +1305,8 @@ direction, against the $83$ points implied by comparing a leakage-inflated sourc
 with an honest target one. A model built from thirteen layout-invariant statistics
 transfers to a different apartment at close to its own in-domain ceiling. That ceiling, in
 turn, becomes the binding constraint: one cannot improve target performance much beyond
-source performance, which is why our attempts to push the source model further --- richer
-invariant features, class weighting, wider networks --- gained little. Only causal
+source performance, which is why our attempts to push the source model further (richer
+invariant features, class weighting, wider networks) gained little. Only causal
 smoothing helped, and modestly.
 
 The recurrence of the inversion is what we would most want a reader to take away.
@@ -1340,7 +1339,7 @@ in-domain accuracy to do it.
 On the methods themselves, the three failures are instructive precisely because they are
 different from one another. PETAL's is a reading failure with a sharp edge: a coefficient
 that looks like a regulariser weight scales the likelihood, and the hyperparameter search
-most practitioners would run --- selecting on target performance --- actively prefers the
+most practitioners would run, selecting on target performance, actively prefers the
 value that disables adaptation. PeTTA's is dimensional: a divergence statistic that behaves
 sensibly when the domain gap is a corruption of the same image saturates when the gap is a
 different building, and because the mechanism fails silently the loss curves look
@@ -1367,13 +1366,13 @@ cross-entropy in its published objective (Eq.~\ref{eq:petal}), so $\bar\lambda=0
 the data term on any dataset, in any modality; The dataset-specific part is
 narrower than it may appear: selection on target labels prefers $\bar\lambda=0$ whenever
 the source model already outperforms what self-training produces, which is a condition
-that can be checked rather than a coincidence of this data. PeTTA's gating function
+that can be checked, not a coincidence of this data. PeTTA's gating function
 likewise saturates whenever the summed Mahalanobis statistic is large, which is a property
-of summing over embedding dimensions rather than of these apartments --- though whether
+of summing over embedding dimensions rather than of these apartments, though whether
 the statistic reaches that regime does depend on how far apart the domains are, and the
 authors' own traces on image corruptions sit at $0.8$--$1.0$ rather than at unity.
 
-The evaluation result is a property of a procedure rather than of a dataset: stride-$1$
+The evaluation result is a property of a procedure, not of a dataset: stride-$1$
 windowing with a random validation split places near-duplicates across the split whenever
 windows overlap, which is common in sensor-based HAR.
 
@@ -1383,8 +1382,8 @@ from the same two apartments. We therefore state it as an empirical regularity o
 data rather than as a general law: \emph{in this dataset, across every design choice we
 varied, the configuration selected by in-domain validation was the one that transferred
 worst.} If it holds more widely it inverts standard model-selection practice for
-cross-building deployment, and we think the mechanism --- that each of these choices
-increases access to building-specific regularity --- is general enough to be worth
+cross-building deployment, and we think the mechanism, that each of these choices
+increases access to building-specific regularity, is general enough to be worth
 testing elsewhere. Establishing that requires datasets with more than two environments.
 
 \paragraph{Limitations.} The study rests on one HAR dataset and two apartments from it.
@@ -1394,7 +1393,7 @@ beyond these two apartments is untested, and the dataset contains no further hom
 occupancy data is private, so that section is not independently
 reproducible from the released code. Our best configuration improves on the simpler one by
 $3.3$ \macf{} points against a between-fold standard deviation of $0.067$, and we present
-it as a modest gain rather than a result. And the \texttt{cleaning} class, with $113$ target
+it as a modest gain and not a result. And the \texttt{cleaning} class, with $113$ target
 samples, is not learned by any method we tried; whether that is a sample-size limit or a
 representational one, we cannot say from these data.
 
@@ -1410,7 +1409,7 @@ removes the effect, and the window definition is nearly irrelevant to it. Making
 causal, which the online premise of TTA requires, improves target transfer by $7.3$ points
 rather than costing anything.
 
-Across every design choice we varied --- feature set, window length, temporal context ---
+Across every design choice we varied (feature set, window length, temporal context)
 and in both transfer directions, the configuration that validated best in-domain
 transferred worst. Five observations on two apartments do not establish a general law, but
 they do establish that in-domain validation cannot be assumed safe for cross-building
@@ -1435,9 +1434,9 @@ included.
 We do not conclude that test-time adaptation is unsuitable for smart buildings. We conclude
 that it was being asked to repair a problem largely created by evaluation and feature
 design, and that fixing those leaves little for adaptation to contribute. Future work
-should look at making building-specific information transferable rather than discarding
-it --- aligning sensors across sites by functional role, using unlabelled co-activation
-structure --- since the $9$ points separating our layout-invariant features from the
+should look at making building-specific information transferable instead of discarding
+it, aligning sensors across sites by functional role using unlabelled co-activation
+structure, since the $9$ points separating our layout-invariant features from the
 best in-domain configuration are exactly the information currently being thrown away.
 
 % ============================================================================
@@ -1446,8 +1445,8 @@ best in-domain configuration are exactly the information currently being thrown 
 Code, the raw sensor data and every result file are available at
 \url{https://github.com/TCVHN5Vn/TTA-Test-Time-Adaptation}. The repository reproduces the
 full analysis from the raw CSVs in one pass, each table above names the script and result
-file that generated it. The occupancy dataset is private --- it
-was collected at the Grenoble Institute of Technology and is not ours to redistribute ---
+file that generated it. The occupancy dataset is private: it
+was collected at the Grenoble Institute of Technology and is not ours to redistribute,
 so that section alone is reported but not independently reproducible. Reference implementations of
 the three adaptation methods on this data are at
 \url{https://github.com/TCVHN5Vn/Test-Time-Adaptation}.

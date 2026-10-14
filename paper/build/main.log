@@ -1034,11 +1034,6 @@ Overfull \hbox (8.5555pt too wide) in paragraph at lines 485--488
  []
 
 [5]
-
-Package natbib Warning: Author undefined for citation`tapia2004' 
-(natbib)                on page 6 on input line 522.
-
-
 Overfull \hbox (0.88556pt too wide) in paragraph at lines 571--577
 \T1/stix/m/n/10 random pre-dic-tion gives ac-cu-racy $\LS1/stix/m/n/10 0\LS1/st
 ix/m/it/10 :\LS1/stix/m/n/10 306$ \T1/stix/m/n/10 and macro-F$[]$ $[]$.
@@ -1058,25 +1053,30 @@ File: figures//fig_features.pdf Graphic file (type pdf)
 File: figures//fig_saturation.pdf Graphic file (type pdf)
 <use figures//fig_saturation.pdf>
 
-Underfull \hbox (badness 1127) in paragraph at lines 1071--1078
+Underfull \hbox (badness 1127) in paragraph at lines 1070--1077
 \T1/stix/m/n/10 con-firm-ing that $\LS2/stixex/m/n/10 ê\LS1/stixscr/m/n/10 ^^L\
 LS1/stix/m/it/10 ; \LS1/stixscr/m/n/10 ^^L\LS2/stixex/m/n/10 ë$ \T1/stix/m/n/10
  must de-note a dis-sim-i-lar-ity. More
  []
 
 [11]
-Underfull \hbox (badness 1077) in paragraph at lines 1200--1206
+Underfull \hbox (badness 1584) in paragraph at lines 1199--1205
+\T1/stix/m/n/10 whole con-fig-u-ra-tion spaces in-stead of at sin-gle points:
+ []
+
+
+Underfull \hbox (badness 1077) in paragraph at lines 1199--1205
 \T1/stix/m/n/10 normalisation-statistic adap-ta-tion is not a prop-erty of a
  []
 
 [12] [13] [14]
-Underfull \hbox (badness 1072) in paragraph at lines 1362--1364
+Underfull \hbox (badness 1072) in paragraph at lines 1361--1363
  []\T1/stix/m/it/11 What gen-er-alises, and what does not.[] \T1/stix/m/n/10 Th
 e find-ings
  []
 
 
-Overfull \hbox (13.96715pt too wide) in paragraph at lines 1446--1454
+Overfull \hbox (13.96715pt too wide) in paragraph at lines 1445--1453
 \T1/stix/m/n/10 able at [][]$\T1/zi4/m/n/10 https : / / github . com / TCVHN5Vn
  / TTA-[]Test-[]Time-[]Adaptation$[][]\T1/stix/m/n/10 .
  []
@@ -1085,4 +1085,4 @@ Overfull \hbox (13.96715pt too wide) in paragraph at lines 1446--1454
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  )
-Output written on main.xdv (16 pages, 209348 bytes).
+Output written on main.xdv (16 pages, 209256 bytes).
