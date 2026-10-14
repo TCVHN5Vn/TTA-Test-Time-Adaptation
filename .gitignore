@@ -18,3 +18,6 @@ results/occ_*.npy
 # internal working documents, not part of the published record
 CORRECTIONS.md
 PAPER_DRAFT.md
+
+# staged for a possible second dataset; not part of the current study
+.local/
