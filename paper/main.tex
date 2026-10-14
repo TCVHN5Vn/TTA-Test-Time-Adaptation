@@ -92,9 +92,11 @@ learning signal entirely. PeTTA gates its update rate on a Mahalanobis distance 
 over $64$ embedding dimensions; across buildings that sum is large enough that the gate
 saturates and the teacher stops updating. DIGA does help, by $1.7$ \macf{} points with a
 bootstrap interval excluding zero, but only with hyperparameters retuned on target labels.
-On occupancy estimation no method improves on the source model: what looks like an
-adaptation gain is a target-fitted normalisation worth $3.8$ MCC points to every method,
-the unadapted baseline included. Our conclusion is not that TTA fails in smart
+Occupancy estimation then supplies the clearest test, because the two transfer
+directions differ only in the quality of the source checkpoint. Against a sound one no
+method improves and the normalisation-based ones lose ground; against a checkpoint that is
+worse than chance the same methods gain $27$ to $41$ MCC points. Adaptation gain here
+measures source-model deficiency, not adaptation quality. Our conclusion is not that TTA fails in smart
 buildings, but that it was being asked to repair a problem largely created by evaluation
 and feature design.
 \end{abstract}
@@ -191,9 +193,11 @@ Our contributions are as follows.
   divergence signal saturates, and DIGA's advertised global hyperparameters do not
   transfer (Section~\ref{sec:res-mech}).
 
-\item \textbf{A second task confirming the same conclusions.} On cross-office occupancy
-  estimation no method improves on the source model, and PETAL and PeTTA reproduce source
-  predictions to four decimal places (Section~\ref{sec:res-oe}).
+\item \textbf{A second task isolating what adaptation gain measures.} On cross-office
+  occupancy estimation the two transfer directions differ only in the quality of the
+  source checkpoint: against a sound one no method improves, against one worse than
+  chance the same methods gain $27$ to $41$ MCC points. PETAL and PeTTA reproduce source
+  predictions in both (Section~\ref{sec:res-oe}).
 \end{itemize}
 
 Section~\ref{sec:related} reviews domain adaptation and TTA for sensor data.
@@ -1042,8 +1046,9 @@ PeTTA       & $0.6583$ & $0.6951$ & $0.6966$ \\
 \end{tabular}
 \end{table*}
 
-Three results follow from Table~\ref{tab:oe}. No method improves on the source model
-under any protocol; DIGA is below the baseline in all three columns. The choice of normalisation is worth $+3.8$ MCC
+Three results follow from Table~\ref{tab:oe}, all of them about the forward direction;
+the reverse is taken up below. No method improves on the source model under any of the
+three normalisation protocols, and DIGA is below the baseline in all three columns. The choice of normalisation is worth $+3.8$ MCC
 points, but it is worth that to \emph{every} method equally, including the unadapted
 baseline. It is normalisation, not adaptation, and a protocol that fits the scaler on
 target statistics will credit it to whichever method happens to be under test. Finally,
@@ -1226,9 +1231,12 @@ labels. PETAL and PeTTA do not adapt at all, for reasons traceable to specific e
 PETAL's coefficient scales the likelihood, so the value selected by target-label tuning
 removes the learning signal; PeTTA's divergence signal sums over the embedding dimension
 and saturates when the domains are buildings. Both failures reproduce on occupancy
-estimation, where no method improves on the source model and an apparent adaptation gain
-proves attributable to a target-fitted normalisation worth $3.8$ MCC points to every
-method, the unadapted one included.
+estimation, in both of its transfer directions. Occupancy also isolates what an adaptation
+gain measures: the two directions differ only in the quality of the source checkpoint, and
+against a sound one no method improves, while against one that is worse than chance the
+same methods gain $27$ to $41$ MCC points. A further apparent gain proves attributable to
+a target-fitted normalisation worth $3.8$ MCC points to every method, the unadapted one
+included.
 
 We do not conclude that test-time adaptation is unsuitable for smart buildings. We conclude
 that it was being asked to repair a problem largely created by evaluation and feature
