@@ -1188,8 +1188,10 @@ they travel, and it is worth separating them.
 
 Two do not depend on this dataset at all. PETAL's $\bar\lambda$ multiplies the
 cross-entropy in its published objective (Eq.~\ref{eq:petal}), so $\bar\lambda=0$ removes
-the data term on any dataset, in any modality; the only dataset-specific part of our
-result is that tuning on target labels happened to select it. PeTTA's gating function
+the data term on any dataset, in any modality; The dataset-specific part is
+narrower than it may appear: selection on target labels prefers $\bar\lambda=0$ whenever
+the source model already outperforms what self-training produces, which is a condition
+that can be checked rather than a coincidence of this data. PeTTA's gating function
 likewise saturates whenever the summed Mahalanobis statistic is large, which is a property
 of summing over embedding dimensions rather than of these apartments --- though whether
 the statistic reaches that regime does depend on how far apart the domains are, and the
