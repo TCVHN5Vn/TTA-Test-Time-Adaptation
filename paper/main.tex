@@ -79,8 +79,10 @@ $0.454$ and $0.307$ in the reverse --- a gap of $9$ to $15$ points rather than $
 features responsible are thirteen window-level summary statistics. The $106$ per-sensor
 features that dominate the usual design score \emph{below} stratified-random guessing on
 the target in both directions, because a given sensor index is a different physical device
-in each building. We also observe an inversion worth stating directly: the feature set
-with the best in-domain validation score transfers worst, in both directions.
+in each building. One pattern recurs across every design choice we varied --- which features, how long
+the window, how much temporal context --- and in both transfer directions: the
+configuration that validates best in-domain transfers worst. Selecting a model on
+in-domain accuracy systematically selects the worst one to deploy elsewhere.
 
 Against that baseline the three methods behave differently, and each failure
 traces to a specific published equation rather than to our port. PETAL's coefficient
@@ -144,8 +146,16 @@ $106$ of its $135$ dimensions to per-sensor statistics, and those features are a
 harmful across buildings: used alone they score below chance in both transfer directions,
 because \texttt{sensor\_id\_100} is a different physical device in each apartment. A model
 built from thirteen layout-invariant window statistics transfers far better while
-validating slightly worse in-domain --- an inversion that holds in both directions and
-that we believe is the most useful single finding here.
+validating slightly worse in-domain.
+
+That inversion is the central finding of this paper, and it is not confined to the choice
+of features. We observed it four more times, in both transfer directions: longer windows
+validate better and transfer worse; added temporal context does the same; and in the
+reverse direction the conventional feature vector attains the best source-validation
+score of any configuration we tried and the worst target score, below chance. The
+practical consequence is immediate and uncomfortable. Choosing a checkpoint by in-domain
+validation --- the ordinary thing to do --- systematically picks the model that will
+perform worst in the next building.
 
 What remains for adaptation to do is correspondingly small, and the three methods divide
 cleanly. One helps a little. Two do not run at all, and in both cases the reason is
@@ -165,9 +175,15 @@ Our contributions are as follows.
   TTA. Replacing them with causal windows improves target \macf{} by $7.3$ points. There
   is no trade-off to manage (Section~\ref{sec:res-leak}).
 
-\item \textbf{Sensor-identity features are harmful, and in-domain fit anti-correlates with
-  transfer.} Both results are established in both transfer directions
-  (Section~\ref{sec:res-feat}).
+\item \textbf{In-domain fit anti-correlates with cross-building transfer}, shown across
+  feature sets, window length and temporal context, in both transfer directions
+  (Sections~\ref{sec:res-feat} and~\ref{sec:res-ceiling}). Per-sensor features, which
+  drive most of the effect, score below stratified-random on the target either way.
+
+\item \textbf{A located ceiling.} Seven attempts to raise target performance beyond the
+  deployable checkpoint are reported, six of which fail, including an unsupervised
+  sensor-correspondence method given the advantage of offline access to the target
+  stream (Sections~\ref{sec:res-ceiling} and~\ref{sec:res-corr}).
 
 \item \textbf{Three mechanisms by which image-domain assumptions break on sensor data},
   each tied to a published equation: PETAL's $\bar\lambda$ scales the likelihood, PeTTA's
@@ -449,6 +465,31 @@ Target data is divided into eight contiguous segments. \emph{Non-recurring} stre
 each once; \emph{recurring} streams make three passes in randomised order, repeated over
 three independent orderings. Target labels are withheld throughout adaptation and used
 only to score predictions afterwards.
+
+\subsection{What a method is allowed to know}
+\label{sec:method-tiers}
+
+Methods in this literature differ in what they require of the target building before they
+can produce a prediction, and the distinction is usually left implicit. We separate three
+levels.
+
+\begin{description}
+\item[Tier 1, no target data.] Everything is estimated on the source. The model can be
+  installed in a new building and run immediately. This is the setting test-time
+  adaptation exists to serve.
+\item[Tier 2, unlabelled target data, offline.] The full target distribution must be
+  collected before deployment, though no labels are needed. This is source-free domain
+  adaptation. It is a weaker requirement than labels but it reintroduces exactly the
+  data-collection phase that motivates TTA.
+\item[Tier 3, target labels.] Not deployable.
+\end{description}
+
+The distinction matters for what follows. The layout-invariant features used throughout
+this paper are tier 1: every transform is fitted on the source split alone, and the model
+needs nothing from the target building. Feature-shift pruning, by contrast, selects
+features by comparing source and target distributions, and is therefore tier 2 ---
+unsupervised, but not deployable without a prior observation period. The hyperparameter
+selection discussed next is tier 3.
 
 \subsection{Hyperparameter selection}
 \label{sec:method-hparam}
@@ -770,6 +811,104 @@ AdaBN       & $0.365$ & $0.310$ & $0.482$ & $0.275$ & $0.056$ \\
 \end{tabular}
 \end{table*}
 
+\subsection{What does not move the result}
+\label{sec:res-ceiling}
+
+Target performance is bounded by source performance: the deployable checkpoint validates
+at $0.534$ in-domain and transfers at $0.447$, a gap of under nine points. Raising the
+target therefore requires raising the source with features that still cross buildings. We
+report seven attempts, all negative, because together they locate the ceiling.
+
+% source: results/exp10_improve.csv, exp15_classifier.csv, exp16_temporal.csv,
+%         exp14_correspondence.csv
+\begin{table*}[t]
+\centering
+\caption{Attempts to raise target \macf{} beyond the $13$-d causal checkpoint
+(S1$\to$S2, same protocol throughout). Only causal smoothing and a source-estimated
+transition model help, and both marginally.}
+\label{tab:ceiling}
+\small
+\begin{tabular}{llcc}
+\toprule
+Attempt & What was varied & Source-val & Target \macf \\
+\midrule
+\textbf{baseline} & $13$-d, MLP, $W{=}20$, median $L{=}41$ & $0.5341$ & $\mathbf{0.4466}$ \\
+\midrule
+richer invariant features & $+$ sorted profile, runs, multi-scale ($60$-d) & $-$ & $0.4188$ \\
+class weighting           & inverse-frequency weights          & $-$ & $0.3852$ \\
+network width             & $64$--$32$ and $128$--$64$         & $-$ & $0.4297$ \\
+classifier family         & boosting, forests, linear          & $0.5230$ & $0.4190$ \\
+window length             & $W\in\{10,40,60\}$                 & $0.5611$ & $0.4330$ \\
+temporal context          & stacked $T{=}11$, causal TCN $T{=}21$ & $0.5414$ & $0.4111$ \\
+sensor correspondence     & unsupervised assignment (\S\ref{sec:res-corr}) & $-$ & $0.2227$ \\
+\midrule
+transition model          & source-estimated HMM, causal filtering & $0.5341$ & $0.4503$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Two things are worth drawing out of Table~\ref{tab:ceiling}.
+
+First, the only attempt that helps in \emph{both} transfer directions is the transition
+model, and it helps by less than a point ($0.4466\to0.4503$ forward, $0.3068\to0.3160$
+reverse). Its transition matrix is estimated on the source apartment and encodes nothing
+about sensors --- only how often one activity follows another. That it transfers at all,
+while every attempt to extract more from the sensor stream does not, is consistent with
+the rest of this paper: what crosses buildings is behavioural regularity, not layout.
+
+Second, and more importantly, several rows raise the source-validation score while
+lowering the target. Window length does ($0.5611$ at $W{=}60$ against $0.5341$ at
+$W{=}20$), and so does temporal context ($0.5414$ for the TCN). Section~\ref{sec:res-feat}
+observed the same thing across feature sets. The pattern is general, and
+Section~\ref{sec:discussion} returns to it.
+
+\subsection{Can the sensors be matched across buildings?}
+\label{sec:res-corr}
+
+If per-sensor features fail only because index $100$ denotes a different device in each
+apartment, the obvious repair is to estimate the correspondence. We tested this. Each
+sensor was described by a behavioural signature computed from unlabelled data --- firing
+rate, burst-length statistics, a $24$-bin diurnal profile, and an index-free summary of
+its co-activation neighbourhood --- and the two sensor sets were matched by balanced
+assignment on signature distance.
+
+To separate a real correspondence from overfitting, permutations were estimated on one
+half of the target stream and scored on the other.
+
+% source: results/exp14_correspondence.csv and the half-split control
+\begin{table}[t]
+\centering
+\caption{Per-sensor features under four permutations, target \macf. A correspondence that
+is real should transfer between halves of the target stream.}
+\label{tab:corr}
+\small
+\begin{tabular}{lcc}
+\toprule
+Permutation & Fitted half & Held-out half \\
+\midrule
+identity (no matching)      & $0.0976$ & $0.1744$ \\
+learned signatures          & $0.0749$ & $0.2348$ \\
+greedy search on fitted half& $\mathbf{0.4174}$ & $0.1738$ \\
+random, 20 draws            & --- & $0.1655\pm0.050$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+A greedy search reaches $0.417$ on the half it is fitted to and $0.174$ on held-out data,
+indistinguishable from identity and from random. The signature-based assignment is
+inconsistent between halves. No permutation we could find transfers.
+
+We note that this test is permissive: estimating a correspondence from the whole
+unlabelled target stream is offline source-free adaptation, not test-time adaptation
+(Section~\ref{sec:method-tiers}), so it has an advantage no deployable method would have.
+Failing under relaxed assumptions implies failing under strict ones.
+
+The conclusion is stronger than the premise it tests. Per-sensor features do not fail
+because they are mislabelled across buildings. They fail because a sensor in one
+apartment has no counterpart in the other: rooms differ in shape, furniture sits
+elsewhere, and routines differ. Relabelling cannot recover information that was never
+shared.
+
 \subsection{Three mechanisms}
 \label{sec:res-mech}
 
@@ -930,6 +1069,23 @@ source performance, which is why our attempts to push the source model further -
 invariant features, class weighting, wider networks --- gained little. Only causal
 smoothing helped, and modestly.
 
+The recurrence of the inversion is what we would most want a reader to take away.
+It appears when choosing features (a set validating at $0.623$ transfers at $0.300$, while
+one validating at $0.534$ transfers at $0.447$), when choosing window length ($0.5611$
+in-domain at $W{=}60$ against $0.4260$ on the target), when adding temporal context (the
+TCN validates at $0.5414$ and transfers at $0.4082$), and in the reverse direction, where
+the conventional $135$-d vector records the best source-validation score of any
+configuration in this study and the worst transfer, below chance. Five instances, four
+different design decisions, both directions.
+
+A single mechanism accounts for all of them. Every one of these choices increases the
+model's access to building-specific regularity: which device fired, what the routine looks
+like over an hour, how this occupant sequences their morning. In-domain that is signal.
+Across buildings it is noise with the wrong sign. The practical consequence deserves to be
+stated plainly, because it inverts standard practice: for cross-building deployment,
+in-domain validation accuracy is not merely an imperfect model-selection criterion, it is
+an actively misleading one.
+
 This reframes what per-sensor features cost. In-domain they are valuable: the best
 source-validation score in Table~\ref{tab:features} belongs to a set that retains them.
 Across buildings they are worse than useless, scoring below chance alone in both
@@ -978,7 +1134,9 @@ removes the effect, and the window definition is nearly irrelevant to it. Making
 causal, which the online premise of TTA requires, improves target transfer by $7.3$ points
 rather than costing anything.
 
-Under the grouped protocol the cross-building gap is $9$ to $15$ points depending on
+Across every design choice we varied --- feature set, window length, temporal context ---
+and in both transfer directions, the configuration that validated best in-domain
+transferred worst. Under the grouped protocol the cross-building gap is $9$ to $15$ points depending on
 direction, and most of it is attributable to features that encode sensor identity. Those
 features score below stratified-random guessing on the target in both directions. The
 feature set that validates best in-domain transfers worst, also in both directions.
